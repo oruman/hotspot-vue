@@ -107,7 +107,7 @@ export class Network extends VuexModule {
   public async LOGOUT() {
     this.context.commit("increaseLoadingCount");
     return await axios
-      .get(this._url + "logout", {
+      .post(this._url + "logout", {
         withCredentials: true
       })
       .catch(() => {
