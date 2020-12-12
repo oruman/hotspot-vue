@@ -56,7 +56,7 @@ export default class TopToolbar extends Vue {
     },
     {
       icon: "mdi-headphones",
-      name: "Monthly Speaking",
+      name: "Monthly Homework",
       click: () => {
         this.routeTo("/monspeaking");
       }

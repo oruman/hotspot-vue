@@ -6,7 +6,9 @@ import { State } from "@/store/modules/state";
 import { Grades } from "@/store/modules/grades";
 import { Groups } from "@/store/modules/groups";
 import { Students } from "@/store/modules/students";
-import {MonthSpeaking} from "@/store/modules/monthspeaking";
+import { MonthSpeaking } from "@/store/modules/monthspeaking";
+import { Audio } from "@/store/modules/audio";
+import { Homework } from "@/store/modules/homework";
 
 Vue.use(Vuex);
 
@@ -22,6 +24,8 @@ export default new Vuex.Store({
       contex.dispatch("groups/CLEAR_CACHE");
       contex.dispatch("students/CLEAR_CACHE");
       contex.dispatch("monspeaking/CLEAR_CACHE");
+      contex.dispatch("audio/CLEAR_CACHE");
+      contex.dispatch("homework/CLEAR_CACHE");
     }
   },
   getters: {
@@ -39,6 +43,8 @@ export default new Vuex.Store({
     grades: Grades,
     groups: Groups,
     students: Students,
-    monspeaking: MonthSpeaking
+    monspeaking: MonthSpeaking,
+    audio: Audio,
+    homework: Homework
   }
 });

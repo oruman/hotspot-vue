@@ -27,8 +27,7 @@ export class MonthSpeaking extends VuexModule {
       const newItem: SimpleObject = {
         id: item.id,
         name: item.name,
-        date: item.date,
-        link: item.link
+        date: item.date
       };
       if (
         Object.prototype.hasOwnProperty.call(item, "metadata") &&
@@ -37,7 +36,6 @@ export class MonthSpeaking extends VuexModule {
         newItem.duration = item.metadata.duration;
       newData.push(newItem);
     }
-    console.log(newData);
     this._files = newData;
   }
 
@@ -65,18 +63,8 @@ export class MonthSpeaking extends VuexModule {
         { root: true }
       )
       .then(response => {
-        if (Object.prototype.hasOwnProperty.call(response, "files")) {
-          const url = this.context.rootGetters["network/url"];
-          for (const item of response.files) {
-            item.link =
-              url +
-              "file/" +
-              item.id +
-              "/view/" +
-              encodeURIComponent(item.name);
-          }
+        if (Object.prototype.hasOwnProperty.call(response, "files"))
           this.context.commit("setFiles", response.files);
-        }
       })
       .catch(() => {
         console.log("Month Speaking ERROR");

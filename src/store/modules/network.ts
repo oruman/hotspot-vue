@@ -193,6 +193,67 @@ export class Network extends VuexModule {
   }
 
   @Action
+  GET_LINK(fileId: number) {
+    return axios
+      .get(this._url + "file/" + fileId + "/link", {
+        withCredentials: true
+      })
+      .catch(err => {
+        if (err.response.data && err.response.status == 500)
+          return Promise.resolve(err.response);
+        else {
+          if (err.response.status == 401)
+            this.context.commit("setUnLogged", {});
+          return Promise.reject(err);
+        }
+      })
+      .then((res: AxiosResponse) => {
+        if (
+          Object.prototype.hasOwnProperty.call(res.data, "link") &&
+          Object.prototype.hasOwnProperty.call(res.data.link, "url")
+        )
+          return Promise.resolve(res.data.link.url);
+        else if (Object.prototype.hasOwnProperty.call(res.data, "url"))
+          return Promise.resolve(res.data.url);
+        else return Promise.reject("");
+      });
+  }
+
+  @Action
+  GET_LINK_INFO(fileId: number) {
+    return axios
+      .get(this._url + "file/" + fileId + "/link", {
+        withCredentials: true
+      })
+      .catch(err => {
+        if (err.response.data && err.response.status == 500)
+          return Promise.resolve(err.response);
+        else {
+          if (err.response.status == 401)
+            this.context.commit("setUnLogged", {});
+          return Promise.reject(err);
+        }
+      })
+      .then((res: AxiosResponse) => {
+        if (
+          Object.prototype.hasOwnProperty.call(res.data, "name") &&
+          Object.prototype.hasOwnProperty.call(res.data, "link") &&
+          Object.prototype.hasOwnProperty.call(res.data.link, "url")
+        )
+          return Promise.resolve({
+            name: res.data.name,
+            link: res.data.link.url
+          });
+        else if (Object.prototype.hasOwnProperty.call(res.data, "url"))
+          return Promise.resolve({
+            name: "",
+            link: res.data.url
+          });
+        else return Promise.reject("");
+      });
+  }
+
+  @Action
   CLEAR_CACHE() {
     this.context.commit("clearCache");
   }
