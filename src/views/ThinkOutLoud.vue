@@ -9,7 +9,7 @@
           <v-subheader>
             Day #{{ index + 1 }}
             <v-spacer />
-            Deadline: {{ getDate }}
+            Deadline: {{ getDateFormat }}
           </v-subheader>
           <v-divider />
           <v-card-subtitle v-html="item"></v-card-subtitle>
@@ -32,13 +32,35 @@
               <v-icon>mdi-play</v-icon>
               Play
             </v-btn>
-            <v-btn text small v-if="!isFileRecord(index)" :disabled="true">
+            <v-btn
+              text
+              small
+              v-if="!isFileRecord(index)"
+              :disabled="isLoading || isDisabled"
+              @click.prevent="upload(index)"
+            >
               <v-icon>mdi-upload</v-icon>
               Upload
             </v-btn>
-            <v-btn text small v-if="!isFileRecord(index)" :disabled="true">
+            <v-btn
+              text
+              small
+              v-if="!isFileRecord(index)"
+              :disabled="isLoading || isDisabled"
+            >
               <v-icon>mdi-record-rec</v-icon>
               Record
+            </v-btn>
+            <v-spacer />
+            <v-btn
+              text
+              small
+              v-if="isFileRecord(index) && !isDisabled"
+              :disabled="isLoading"
+              @click.prevent="remove(index)"
+            >
+              <v-icon>mdi-close-thick</v-icon>
+              Delete
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -52,13 +74,17 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import { mapGetters } from "vuex";
 import moment from "moment";
 import Utils from "@/helpers/util";
 
-@Component
+@Component({
+  computed: mapGetters(["isLoading"])
+})
 export default class ThinkOutLoud extends Vue {
   private currentMonth = 0;
   private aspect = 3;
+  private delayToLesson = -2;
 
   mounted() {
     this.$store.dispatch("grades/GET_DATA");
@@ -96,10 +122,22 @@ export default class ThinkOutLoud extends Vue {
   }
 
   private get getDate() {
-    if (!this.lessonsDate[this.currentMonth]) return "N/A";
-    return moment(this.lessonsDate[this.currentMonth])
-      .add(-2, "day")
-      .format("YYYY-MM-DD HH:mm");
+    return this.lessonsDate[this.currentMonth]
+      ? moment(this.lessonsDate[this.currentMonth]).add(
+          this.delayToLesson,
+          "day"
+        )
+      : null;
+  }
+
+  private get getDateFormat() {
+    const lessonDate = this.getDate;
+    return lessonDate ? lessonDate.format("YYYY-MM-DD HH:mm") : "N/A";
+  }
+
+  private get isDisabled() {
+    const lessonDate = this.getDate;
+    return lessonDate ? lessonDate.valueOf() < Date.now() : true;
   }
 
   private get files() {
@@ -141,12 +179,39 @@ export default class ThinkOutLoud extends Vue {
     });
   }
 
+  private remove(num: number) {
+    if (
+      !this.files[this.currentMonth] ||
+      !this.files[this.currentMonth][num] ||
+      !Object.prototype.hasOwnProperty.call(
+        this.files[this.currentMonth][num],
+        "id"
+      ) ||
+      !confirm("Are you sure you want to delete this file?")
+    )
+      return;
+    this.$store.dispatch(
+      "network/DELETE_HOMEWORK",
+      this.files[this.currentMonth][num].id
+    );
+  }
+
   private download(num: number) {
     const fileId = this.isFileRecord(num);
     if (!fileId) return;
     this.$store.dispatch("network/GET_LINK_INFO", fileId).then(info => {
       if (!info.link) return;
       Utils.downloadURL(info.link, info.name);
+    });
+  }
+
+  private upload(num: number) {
+    const dateIndex = 5 * this.currentMonth + num + 1;
+    Utils.chooseFile("audio/*").then(result => {
+      const data: SimpleObject = {};
+      data.file = result;
+      data.dateIndex = dateIndex;
+      this.$store.dispatch("network/UPLOAD_TOL", data);
     });
   }
 }

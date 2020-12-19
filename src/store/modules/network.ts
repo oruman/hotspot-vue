@@ -254,6 +254,58 @@ export class Network extends VuexModule {
   }
 
   @Action
+  UPLOAD_ROL(payloads: SimpleObject) {
+    payloads.kind = 3;
+    return this.context.dispatch("UPLOAD_HW_AUDIO", payloads);
+  }
+
+  @Action
+  UPLOAD_TOL(payloads: SimpleObject) {
+    payloads.kind = 2;
+    return this.context.dispatch("UPLOAD_HW_AUDIO", payloads);
+  }
+
+  @Action
+  UPLOAD_HW_AUDIO(payloads: SimpleObject) {
+    payloads.studentId = this.context.rootGetters["state/studentId"];
+    this.context.commit("increaseLoadingCount");
+    return axios
+      .post(this._url + "homework/speaking", payloads, {
+        withCredentials: true,
+        headers: {
+          "Content-type": "application/json"
+        }
+      })
+      .then((res: AxiosResponse) => {
+        if (Object.prototype.hasOwnProperty.call(res, "data")) {
+          this.context.dispatch("homework/UPDATE_DATA", res.data, {
+            root: true
+          });
+          return Promise.resolve(true);
+        } else return Promise.reject();
+      })
+      .finally(() => {
+        this.context.commit("decreaseLoadingCount");
+      });
+  }
+
+  @Action
+  DELETE_HOMEWORK(fileId: number) {
+    return axios
+      .delete(this._url + "homework/speaking?id=" + fileId, {
+        withCredentials: true
+      })
+      .then((res: AxiosResponse) => {
+        if (Object.prototype.hasOwnProperty.call(res, "data")) {
+          this.context.dispatch("homework/GET_DATA_WITHOUT_CACHE", null, {
+            root: true
+          });
+          return Promise.resolve(true);
+        } else return Promise.reject();
+      });
+  }
+
+  @Action
   CLEAR_CACHE() {
     this.context.commit("clearCache");
   }

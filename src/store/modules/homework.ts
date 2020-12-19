@@ -29,6 +29,15 @@ export class Homework extends VuexModule {
     this._data = payloads.sort((a, b) => a.date_index - b.date_index);
   }
 
+  @Mutation
+  updateData(payloads: SimpleObject) {
+    if (!Object.prototype.hasOwnProperty.call(payloads, "id")) return;
+    const id = payloads.id;
+    const index = this._data.findIndex(item => item.id == id);
+    if (index >= 0) this._data[0] = payloads;
+    else this._data.push(payloads);
+  }
+
   @Action
   GET_DATA() {
     if (Date.now() < this.cacheTime) return;
@@ -41,6 +50,18 @@ export class Homework extends VuexModule {
       .catch(() => {
         console.log("HomeWork ERROR");
       });
+  }
+
+  @Action
+  UPDATE_DATA(payloads: SimpleObject) {
+    this.context.commit("updateData", payloads);
+    this.context.dispatch("GET_DATA_WITHOUT_CACHE");
+  }
+
+  @Action
+  GET_DATA_WITHOUT_CACHE() {
+    this.context.commit("setCacheTime", 0);
+    return this.context.dispatch("GET_DATA");
   }
 
   @Action

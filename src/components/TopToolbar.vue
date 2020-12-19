@@ -30,13 +30,22 @@
       <v-app-bar-nav-icon @click.stop="toggleMenu"></v-app-bar-nav-icon>
 
       <v-toolbar-title>{{ $route.name }}</v-toolbar-title>
+      <v-spacer />
+      <v-progress-circular
+        v-if="isLoading"
+        dark
+        indeterminate
+      ></v-progress-circular>
     </v-app-bar>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-@Component
+import { mapGetters } from "vuex";
+@Component({
+  computed: mapGetters(["isLoading"])
+})
 export default class TopToolbar extends Vue {
   private showMenu = false;
   private itemsMenu = [
@@ -105,6 +114,7 @@ export default class TopToolbar extends Vue {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private doNothing(): void {}
+
   private routeTo(path: string) {
     this.$router.push(path);
   }

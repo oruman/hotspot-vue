@@ -6,7 +6,7 @@
           <v-subheader>
             Week #{{ item.id }}
             <v-spacer />
-            Deadline: {{ getDate(item.id) }}
+            Deadline: {{ getDateFormat(item.id) }}
           </v-subheader>
           <v-divider />
           <v-card-subtitle>{{ item.te }}</v-card-subtitle>
@@ -29,13 +29,34 @@
               <v-icon>mdi-play</v-icon>
               Play
             </v-btn>
-            <v-btn text small v-if="!isFileRecord(item.id)" :disabled="true">
+            <v-btn
+              text
+              small
+              v-if="!isFileRecord(item.id)"
+              :disabled="isDisabled(item.id)"
+              @click.prevent="upload(item.id)"
+            >
               <v-icon>mdi-upload</v-icon>
               Upload
             </v-btn>
-            <v-btn text small v-if="!isFileRecord(item.id)" :disabled="true">
+            <v-btn
+              text
+              small
+              v-if="!isFileRecord(item.id)"
+              :disabled="isDisabled(item.id)"
+            >
               <v-icon>mdi-record-rec</v-icon>
               Record
+            </v-btn>
+            <v-spacer />
+            <v-btn
+              text
+              small
+              v-if="isFileRecord(item.id) && !isDisabled(item.id)"
+              @click.prevent="remove(item.id)"
+            >
+              <v-icon>mdi-close-thick</v-icon>
+              Delete
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -46,12 +67,16 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import { mapGetters } from "vuex";
 import moment from "moment";
 import Utils from "@/helpers/util";
 
-@Component
+@Component({
+  computed: mapGetters(["isLoading"])
+})
 export default class ReadOutLoud extends Vue {
   private aspect = 2;
+  private delayToLesson = -2;
 
   mounted() {
     this.$store.dispatch("grades/GET_DATA");
@@ -83,10 +108,19 @@ export default class ReadOutLoud extends Vue {
 
   private getDate(num: number) {
     num--;
-    if (!this.lessonsDate[num]) return "N/A";
-    return moment(this.lessonsDate[num])
-      .add(-2, "day")
-      .format("YYYY-MM-DD HH:mm");
+    return this.lessonsDate[num]
+      ? moment(this.lessonsDate[num]).add(this.delayToLesson, "day")
+      : null;
+  }
+
+  private getDateFormat(num: number) {
+    const lessonDate = this.getDate(num);
+    return lessonDate ? lessonDate.format("YYYY-MM-DD HH:mm") : "N/A";
+  }
+
+  private isDisabled(num: number) {
+    const lessonDate = this.getDate(num);
+    return lessonDate ? lessonDate.valueOf() < Date.now() : true;
   }
 
   private isFileRecord(num: number) {
@@ -111,12 +145,31 @@ export default class ReadOutLoud extends Vue {
     });
   }
 
+  private remove(num: number) {
+    if (
+      !this.files[num] ||
+      !Object.prototype.hasOwnProperty.call(this.files[num], "id") ||
+      !confirm("Are you sure you want to delete this file?")
+    )
+      return;
+    this.$store.dispatch("network/DELETE_HOMEWORK", this.files[num].id);
+  }
+
   private download(item: SimpleObject) {
     const fileId = this.isFileRecord(item.id);
     if (!fileId) return;
     this.$store.dispatch("network/GET_LINK_INFO", fileId).then(info => {
       if (!info.link) return;
       Utils.downloadURL(info.link, info.name);
+    });
+  }
+
+  private upload(num: number) {
+    Utils.chooseFile("audio/*").then(result => {
+      const data: SimpleObject = {};
+      data.file = result;
+      data.dateIndex = num;
+      this.$store.dispatch("network/UPLOAD_ROL", data);
     });
   }
 }

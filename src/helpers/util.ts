@@ -15,4 +15,41 @@ export default class Utils {
     link.click();
     link.remove();
   }
+
+  static chooseFile(accept = ""): Promise<SimpleObject> {
+    return new Promise(resolve => {
+      const regex = /^data:(.*);(.*),(.*)$/gm;
+      let fileName = "";
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        if (!reader.result || typeof reader.result != "string") return;
+        const mt = Array.from(reader.result.matchAll(regex));
+        if (!mt[0] || mt[0].length != 4) return;
+        const ret: SimpleObject = {
+          name: fileName,
+          extension: Utils.getExtension(fileName),
+          contentType: mt[0][1],
+          metadata: {}
+        };
+        ret[mt[0][2]] = mt[0][3];
+        resolve(ret);
+      });
+      const file = document.createElement("input");
+      file.type = "file";
+      if (accept) file.accept = accept;
+      file.addEventListener("change", () => {
+        fileName = "";
+        if (file.files && file.files[0]) {
+          if (file.files[0].name) fileName = file.files[0].name;
+          reader.readAsDataURL(file.files[0]);
+        }
+      });
+      file.click();
+    });
+  }
+
+  static getExtension(fileName: string) {
+    const ext = /(?:\.([^.]+))?$/.exec(fileName);
+    return ext && ext[1] ? ext[1] : "";
+  }
 }
