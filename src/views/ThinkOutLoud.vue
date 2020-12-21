@@ -47,6 +47,7 @@
               small
               v-if="!isFileRecord(index)"
               :disabled="isLoading || isDisabled"
+              @click.prevent="record(item, index)"
             >
               <v-icon>mdi-record-rec</v-icon>
               Record
@@ -205,14 +206,28 @@ export default class ThinkOutLoud extends Vue {
     });
   }
 
+  private getDateIndex(num: number) {
+    return 5 * this.currentMonth + num + 1;
+  }
+
   private upload(num: number) {
-    const dateIndex = 5 * this.currentMonth + num + 1;
+    const dateIndex = this.getDateIndex(num);
     Utils.chooseFile("audio/*").then(result => {
       const data: SimpleObject = {};
       data.file = result;
       data.dateIndex = dateIndex;
       this.$store.dispatch("network/UPLOAD_TOL", data);
     });
+  }
+
+  private record(name: string, num: number) {
+    const dateIndex = this.getDateIndex(num);
+    const obj = {
+      name: name,
+      dateIndex: dateIndex,
+      kind: 2
+    };
+    this.$store.dispatch("audio/SET_RECORD", obj);
   }
 }
 </script>

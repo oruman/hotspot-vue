@@ -86,7 +86,8 @@ export default class AudioPlayer extends Vue {
   }
 
   private get totalDuration() {
-    return this.audioData.duration || 0;
+    const duration = this.audioData.duration;
+    return duration && duration != Infinity ? duration : 0;
   }
 
   private set totalDuration(seconds: number) {

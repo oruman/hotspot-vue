@@ -281,7 +281,7 @@ export class Network extends VuexModule {
           this.context.dispatch("homework/UPDATE_DATA", res.data, {
             root: true
           });
-          return Promise.resolve(true);
+          return Promise.resolve(res.data);
         } else return Promise.reject();
       })
       .finally(() => {
