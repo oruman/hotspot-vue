@@ -134,13 +134,15 @@ export default class ReadOutLoud extends Vue {
   private play(item: SimpleObject) {
     const fileId = this.isFileRecord(item.id);
     if (!fileId) return;
-    this.$store.dispatch("network/GET_LINK", fileId).then(link => {
-      if (!link) return;
+    this.$store.dispatch("network/GET_LINK_INFO", fileId).then(info => {
+      if (!info.link) return;
       const obj = {
         name: item.te,
-        link: link,
+        link: info.link,
         duration: 0
       };
+      if (Object.prototype.hasOwnProperty.call(info, "duration"))
+        obj.duration = info.duration;
       this.$store.dispatch("audio/SET_DATA", obj);
     });
   }

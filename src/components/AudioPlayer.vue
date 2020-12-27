@@ -177,9 +177,36 @@ export default class AudioPlayer extends Vue {
     // Fix duration for streamed audio source or blob based
     // https://stackoverflow.com/questions/38443084/how-can-i-add-predefined-length-to-audio-recorded-from-mediarecorder-in-chrome/39971175#39971175
     if (!this.totalDuration) {
-      this.totalDuration = this.audio.duration;
-      this.endLoaded();
+      let duration = this.audio.duration;
+      if (duration == Infinity) {
+        if (
+          this.audioData.duration &&
+          typeof this.audioData.duration == "number"
+        )
+          duration = this.audioData.duration;
+        else {
+          this.audio.addEventListener(
+            "durationchange",
+            this._handleDurationChange
+          );
+          this.audio.currentTime = 24 * 60 * 60;
+          return;
+        }
+      }
+      this.totalDuration = duration;
     }
+    this.endLoaded();
+  }
+
+  private _handleDurationChange() {
+    const duration = this.audio.duration;
+    if (duration == Infinity) return;
+    this.audio.removeEventListener(
+      "durationchange",
+      this._handleDurationChange
+    );
+    this.audio.currentTime = 0;
+    this.totalDuration = duration;
     this.endLoaded();
   }
 

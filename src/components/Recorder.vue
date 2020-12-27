@@ -39,9 +39,21 @@ export default class Recorder extends Vue {
   private recording = false;
   private micRecorder: MicRecorder | null = null;
   private data: SimpleObject = {};
+  private tm!: number;
+  private last = Date.now();
+  private totalDuration = 0;
 
   mounted() {
     this.isDialog = false;
+    this.tm = setInterval(() => {
+      const last = this.last;
+      this.last = Date.now();
+      if (this.recording) this.totalDuration += (this.last - last) / 1000;
+    }, 200);
+  }
+
+  beforeDestroy() {
+    if (this.tm) clearInterval(this.tm);
   }
 
   updated() {
@@ -63,7 +75,8 @@ export default class Recorder extends Vue {
 
   private setMicRecorder() {
     try {
-      this.micRecorder = new MicRecorder(this.setDuration.bind(this));
+      this.micRecorder = new MicRecorder();
+      this.totalDuration = 0;
       this.isDialog = true;
       // eslint-disable-next-line no-empty
     } catch (e) {}
@@ -75,10 +88,6 @@ export default class Recorder extends Vue {
 
   private get recordData() {
     return this.$store ? this.$store.getters["audio/recordData"] : {};
-  }
-
-  private setDuration() {
-    console.log("test");
   }
 
   private record() {
@@ -142,10 +151,6 @@ export default class Recorder extends Vue {
     return this.totalDuration
       ? Utils.formatAudioDuration(this.totalDuration)
       : "N/A";
-  }
-
-  private get totalDuration() {
-    return 1;
   }
 }
 </script>

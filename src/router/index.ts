@@ -52,6 +52,11 @@ const routes: Array<RouteConfig> = [
     path: "/tol",
     name: "Think Out Loud",
     component: () => import("../views/ThinkOutLoud.vue")
+  },
+  {
+    path: "/profile",
+    name: "Profile Settings",
+    component: () => import("../views/Profile.vue")
   }
 ];
 

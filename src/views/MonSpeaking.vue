@@ -51,12 +51,12 @@ export default class MonSpeaking extends Vue {
   private play(item: SimpleObject) {
     const id = item.id || 0;
     if (!id) return;
-    this.$store.dispatch("network/GET_LINK", id).then(link => {
-      if (!link) return;
+    this.$store.dispatch("network/GET_LINK_INFO", id).then(info => {
+      if (!info.link) return;
       const obj = {
         name: "Monthly Homework: " + item.name,
-        link: link,
-        duration: item.duration || 0
+        link: info.link,
+        duration: item.duration || info.duration || 0
       };
       this.$store.dispatch("audio/SET_DATA", obj);
     });

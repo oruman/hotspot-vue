@@ -7,9 +7,16 @@
             <v-img :src="avatar"></v-img>
           </v-list-item-avatar>
           <v-list-item-content>
-            <v-list-item-title>{{ name }}</v-list-item-title>
-            <v-list-item-subtitle>{{ email }}</v-list-item-subtitle>
+            <v-list-item-title class="wrap-normal">
+              {{ name }}
+            </v-list-item-title>
+            <v-list-item-subtitle class="wrap-normal">
+              {{ email }}
+            </v-list-item-subtitle>
           </v-list-item-content>
+          <v-list-item-action @click="routeTo('profile')">
+            <v-icon>mdi-account-edit</v-icon>
+          </v-list-item-action>
         </v-list-item>
         <v-divider></v-divider>
         <template v-for="(item, index) in itemsMenu">
@@ -120,3 +127,10 @@ export default class TopToolbar extends Vue {
   }
 }
 </script>
+
+<style scoped lang="scss">
+.wrap-normal {
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+</style>

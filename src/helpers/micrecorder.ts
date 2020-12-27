@@ -17,15 +17,13 @@ type CallBackDuration = (duration: number) => void;
 export default class MicRecorder {
   private stream!: MediaStream;
   private mediaRecorder!: MediaRecorder;
-  private callBack: CallBackDuration;
   private audioChunks: Blob[] = [];
   private defaultRecordingType = "";
   private isDisabled = false;
   private isStopped = false;
   private countStart = 0;
 
-  constructor(callBackDuration: CallBackDuration) {
-    this.callBack = callBackDuration;
+  constructor() {
     this.getStream();
   }
 
@@ -118,7 +116,9 @@ export default class MicRecorder {
     } else this.mediaRecorder.stop();
     await promiseStop;
     if (!this.isStopped) return Promise.reject();
-    const audioBlob = new Blob(this.audioChunks);
+    const audioBlob = new Blob(this.audioChunks, {
+      type: this.defaultRecordingType
+    });
     const promiseConvert = new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.addEventListener("load", () => {
@@ -129,6 +129,31 @@ export default class MicRecorder {
     });
     const str = await promiseConvert;
     if (!str || typeof str != "string") return Promise.reject();
+    const promiseDuration = new Promise((resolve, reject) => {
+      const audio = new Audio();
+      audio.volume = 0;
+      audio.muted = true;
+      let fix = false;
+      const audioURL = window.URL.createObjectURL(audioBlob);
+      audio.addEventListener("durationchange", () => {
+        const duration = audio.duration;
+        if (audio.duration == Infinity) {
+          if (fix) return;
+          fix = true;
+          audio.currentTime = 24 * 60 * 60;
+          audio.play();
+        } else {
+          resolve(duration);
+          audio.remove();
+        }
+      });
+      audio.addEventListener("error", () => {
+        audio.remove();
+        reject(0);
+      });
+      audio.src = audioURL;
+    });
+    const duration = await promiseDuration;
     const regex = /^data:(.*);(.*),(.*)$/gm;
     const mt = Array.from(str.matchAll(regex));
     if (!mt[0] || mt[0].length != 4) return;
@@ -139,6 +164,7 @@ export default class MicRecorder {
       }
     };
     ret[mt[0][2]] = mt[0][3];
+    if (duration) ret.metadata.duration = duration;
     return Promise.resolve(ret);
   }
 

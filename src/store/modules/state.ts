@@ -6,6 +6,7 @@ export class State extends VuexModule {
   private _avatar = "";
   private _name = "";
   private _email = "";
+  private _phone = "";
   private _studentId = 0;
 
   get avatar() {
@@ -18,6 +19,10 @@ export class State extends VuexModule {
 
   get email() {
     return this._email;
+  }
+
+  get phone() {
+    return this._phone;
   }
 
   get studentId() {
@@ -45,6 +50,8 @@ export class State extends VuexModule {
       this._name = payloads.name;
     if (Object.prototype.hasOwnProperty.call(payloads, "email"))
       this._email = payloads.email;
+    if (Object.prototype.hasOwnProperty.call(payloads, "phone"))
+      this._phone = payloads.phone;
     if (Object.prototype.hasOwnProperty.call(payloads, "student_id"))
       this._studentId = payloads.student_id;
     this.cacheTime = Date.now() + 10 * 60 * 1000;

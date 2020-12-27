@@ -235,21 +235,26 @@ export class Network extends VuexModule {
         }
       })
       .then((res: AxiosResponse) => {
+        const ret: SimpleObject = {
+          name: "",
+          link: ""
+        };
+        if (Object.prototype.hasOwnProperty.call(res.data, "name"))
+          ret.name = res.data.name;
         if (
-          Object.prototype.hasOwnProperty.call(res.data, "name") &&
           Object.prototype.hasOwnProperty.call(res.data, "link") &&
           Object.prototype.hasOwnProperty.call(res.data.link, "url")
         )
-          return Promise.resolve({
-            name: res.data.name,
-            link: res.data.link.url
-          });
+          ret.link = res.data.link.url;
         else if (Object.prototype.hasOwnProperty.call(res.data, "url"))
-          return Promise.resolve({
-            name: "",
-            link: res.data.url
-          });
-        else return Promise.reject("");
+          ret.link = res.data.url;
+        if (
+          Object.prototype.hasOwnProperty.call(res.data, "metadata") &&
+          Object.prototype.hasOwnProperty.call(res.data.metadata, "duration")
+        )
+          ret.duration = res.data.metadata.duration;
+        if (ret.link) return Promise.resolve(ret);
+        return Promise.reject("");
       });
   }
 

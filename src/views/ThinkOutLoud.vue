@@ -169,13 +169,15 @@ export default class ThinkOutLoud extends Vue {
   private play(name: string, num: number) {
     const fileId = this.isFileRecord(num);
     if (!fileId) return;
-    this.$store.dispatch("network/GET_LINK", fileId).then(link => {
-      if (!link) return;
+    this.$store.dispatch("network/GET_LINK_INFO", fileId).then(info => {
+      if (!info.link) return;
       const obj = {
         name: name,
-        link: link,
+        link: info.link,
         duration: 0
       };
+      if (Object.prototype.hasOwnProperty.call(info, "duration"))
+        obj.duration = info.duration;
       this.$store.dispatch("audio/SET_DATA", obj);
     });
   }
