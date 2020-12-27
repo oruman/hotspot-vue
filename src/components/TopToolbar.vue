@@ -36,7 +36,7 @@
     <v-app-bar app fixed dark color="primary">
       <v-app-bar-nav-icon @click.stop="toggleMenu"></v-app-bar-nav-icon>
 
-      <v-toolbar-title>{{ $route.name }}</v-toolbar-title>
+      <v-toolbar-title>{{ routeName }}</v-toolbar-title>
       <v-spacer />
       <v-progress-circular
         v-if="isLoading"
@@ -124,6 +124,10 @@ export default class TopToolbar extends Vue {
 
   private routeTo(path: string) {
     this.$router.push(path);
+  }
+
+  private get routeName() {
+    return this.$route.name;
   }
 }
 </script>

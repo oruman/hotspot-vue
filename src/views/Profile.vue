@@ -1,29 +1,58 @@
 <template>
   <v-container fluid>
-    <v-layout column>
-      <v-card>
-        <v-card-text>
-          <v-flex class="mb-4">
-            <v-avatar size="96" class="mr-4">
-              <img :src="avatar" alt="Avatar" />
-            </v-avatar>
-            <v-btn>Change Avatar</v-btn>
-          </v-flex>
-          <v-text-field v-model="email" disabled label="E-mail Address" />
-          <v-text-field v-model="name" label="Name" />
-          <v-text-field v-model="phone" label="Phone Number" ref="phone" />
-        </v-card-text>
-        <v-card-actions>
-        </v-card-actions>
-      </v-card>
+    <v-layout justify-center align-center>
+      <v-flex>
+        <v-row>
+          <v-col cols="12" lg="4" offset-lg="4" md="6" offset-md="3">
+            <v-card>
+              <v-card-text>
+                <v-flex class="mb-4">
+                  <v-avatar size="96" class="mr-4">
+                    <img :src="avatar" alt="Avatar" />
+                  </v-avatar>
+                  <v-btn small @click="changeAvatar" :disabled="isLoading">
+                    <v-icon>mdi-account-circle</v-icon>
+                    Change Avatar
+                  </v-btn>
+                </v-flex>
+                <v-text-field v-model="email" disabled label="E-mail Address" />
+                <v-text-field v-model="name" label="Name" />
+                <v-text-field
+                  v-model="phone"
+                  label="Phone Number"
+                  ref="phone"
+                />
+              </v-card-text>
+              <v-card-actions>
+                <v-btn small>
+                  <v-icon>mdi-form-textbox-password</v-icon>
+                  Change password
+                </v-btn>
+                <v-spacer />
+                <v-btn
+                  small
+                  :disabled="!isEnabled || isLoading"
+                  @click.prevent="update"
+                >
+                  <v-icon>mdi-content-save</v-icon>
+                  Update
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import { mapGetters } from "vuex";
 
-@Component
+@Component({
+  computed: mapGetters(["isLoading"])
+})
 export default class Profile extends Vue {
   private profileData: SimpleObject = {};
   private phonePosition = -1;
@@ -133,6 +162,27 @@ export default class Profile extends Vue {
 
   private clearPhone(str: string) {
     return str.replaceAll(/\D/g, "");
+  }
+
+  private get isEnabled() {
+    return Object.keys(this.profileData).length > 0;
+  }
+
+  private update() {
+    const obj: SimpleObject = {};
+    for (const key in this.profileData) {
+      if (!Object.prototype.hasOwnProperty.call(this.profileData, key))
+        continue;
+      if (key == "phone") obj[key] = this.clearPhone(this.profileData[key]);
+      else obj[key] = this.profileData[key];
+    }
+    this.$store.dispatch("network/UPDATE_PROFILE", obj).then(() => {
+      this.profileData = {};
+    });
+  }
+
+  private changeAvatar() {
+    this.$router.push("/avatar");
   }
 }
 </script>

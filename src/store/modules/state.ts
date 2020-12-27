@@ -8,6 +8,7 @@ export class State extends VuexModule {
   private _email = "";
   private _phone = "";
   private _studentId = 0;
+  private _id = 0;
 
   get avatar() {
     return this._avatar;
@@ -29,6 +30,10 @@ export class State extends VuexModule {
     return this._studentId;
   }
 
+  get id() {
+    return this._id;
+  }
+
   @Mutation
   setCacheTime(time: number) {
     this.cacheTime = time;
@@ -38,7 +43,9 @@ export class State extends VuexModule {
   clearCache() {
     this._avatar = "";
     this._name = "";
+    this._phone = "";
     this._studentId = 0;
+    this._id = 0;
     this.cacheTime = 0;
   }
 
@@ -54,6 +61,8 @@ export class State extends VuexModule {
       this._phone = payloads.phone;
     if (Object.prototype.hasOwnProperty.call(payloads, "student_id"))
       this._studentId = payloads.student_id;
+    if (Object.prototype.hasOwnProperty.call(payloads, "id"))
+      this._id = payloads.id;
     this.cacheTime = Date.now() + 10 * 60 * 1000;
   }
 

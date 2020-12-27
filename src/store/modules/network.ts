@@ -311,6 +311,57 @@ export class Network extends VuexModule {
   }
 
   @Action
+  UPDATE_PROFILE(payloads: SimpleObject) {
+    payloads.id = this.context.rootGetters["state/id"];
+    this.context.commit("increaseLoadingCount");
+    return axios
+      .post(this._url + "user/update", payloads, {
+        withCredentials: true,
+        headers: {
+          "Content-type": "application/json"
+        }
+      })
+      .then((res: AxiosResponse) => {
+        if (Object.prototype.hasOwnProperty.call(res, "data")) {
+          this.context.dispatch("state/SET_DATA", res.data, {
+            root: true
+          });
+          return Promise.resolve(res.data);
+        } else return Promise.reject();
+      })
+      .finally(() => {
+        this.context.commit("decreaseLoadingCount");
+      });
+  }
+
+  @Action
+  UPDATE_AVATAR(payloads: string) {
+    const obj: SimpleObject = {
+      userId: this.context.rootGetters["state/id"],
+      src: payloads
+    };
+    this.context.commit("increaseLoadingCount");
+    return axios
+      .post(this._url + "users/avatar", obj, {
+        withCredentials: true,
+        headers: {
+          "Content-type": "application/json"
+        }
+      })
+      .then((res: AxiosResponse) => {
+        if (Object.prototype.hasOwnProperty.call(res, "data")) {
+          this.context.dispatch("state/SET_DATA", res.data, {
+            root: true
+          });
+          return Promise.resolve(res.data);
+        } else return Promise.reject();
+      })
+      .finally(() => {
+        this.context.commit("decreaseLoadingCount");
+      });
+  }
+
+  @Action
   CLEAR_CACHE() {
     this.context.commit("clearCache");
   }
