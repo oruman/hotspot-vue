@@ -1,6 +1,6 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-import Overview from "../views/Overview.vue";
+import Overview from "@/views/Overview.vue";
 import Curriculum from "@/views/Curriculum.vue";
 import Materials from "@/views/Materials.vue";
 import Login from "@/views/Login.vue";
