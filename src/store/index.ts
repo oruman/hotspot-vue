@@ -10,6 +10,7 @@ import { MonthSpeaking } from "@/store/modules/monthspeaking";
 import { Audio } from "@/store/modules/audio";
 import { Homework } from "@/store/modules/homework";
 import { Holidays } from "@/store/modules/holidays";
+import { Errors } from "@/store/modules/errors";
 
 Vue.use(Vuex);
 
@@ -27,6 +28,7 @@ export default new Vuex.Store({
       contex.dispatch("monspeaking/CLEAR_CACHE");
       contex.dispatch("audio/CLEAR_CACHE");
       contex.dispatch("homework/CLEAR_CACHE");
+      contex.dispatch("errors/CLEAR_CACHE");
     }
   },
   getters: {
@@ -47,6 +49,7 @@ export default new Vuex.Store({
     monspeaking: MonthSpeaking,
     audio: Audio,
     homework: Homework,
-    holidays: Holidays
+    holidays: Holidays,
+    errors: Errors
   }
 });

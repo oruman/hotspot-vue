@@ -13,6 +13,7 @@
         - 2020
       </v-col>
     </v-footer>
+    <Notifier />
   </v-app>
 </template>
 
@@ -22,8 +23,11 @@ import TopToolbar from "./components/TopToolbar.vue";
 import BottomNav from "./components/BottomNav.vue";
 import AudioPlayer from "@/components/AudioPlayer.vue";
 import Recorder from "@/components/Recorder.vue";
+import Notifier from "@/components/Notifier.vue";
+
 @Component({
   components: {
+    Notifier,
     Recorder,
     AudioPlayer,
     TopToolbar,

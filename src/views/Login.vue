@@ -40,9 +40,6 @@
                 </v-form>
               </v-card-text>
             </v-card>
-            <v-snackbar v-model="snackbar" :timeout="3000">{{
-              errorMessage
-            }}</v-snackbar>
           </v-col>
         </v-row>
       </v-flex>
@@ -74,8 +71,6 @@ export default class Curriculum extends Vue {
   private passwordRules = [(v: string) => !!v || "Password is required"];
 
   private valid = false;
-  private snackbar = false;
-  private errorMessage = "";
 
   private submit() {
     if (this.alreadySubmitted) return;
@@ -97,14 +92,15 @@ export default class Curriculum extends Vue {
       })
       .catch(err => {
         const response = err.response;
+        let message = "Invalid input";
         if (
           Object.prototype.hasOwnProperty.call(response, "data") &&
           Object.prototype.hasOwnProperty.call(response.data, "error") &&
           response.data.error
         )
-          this.errorMessage = response.data.error;
-        else this.errorMessage = "Invalid input";
-        this.snackbar = true;
+          message = response.data.error;
+        if (message) this.$store.dispatch("errors/ADD", message);
+        this.password = "";
       });
   }
 }

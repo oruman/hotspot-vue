@@ -512,6 +512,13 @@ export class Network extends VuexModule {
           "Content-type": "application/json"
         }
       })
+      .catch(err => {
+        if (err.response.data.error)
+          this.context.dispatch("errors/ADD", err.response.data.error, {
+            root: true
+          });
+        return Promise.reject();
+      })
       .then((res: AxiosResponse) => {
         if (
           Object.prototype.hasOwnProperty.call(res, "data") &&
