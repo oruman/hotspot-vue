@@ -131,7 +131,6 @@ export default class Avatar extends Vue {
   }
 
   private get isEnabled() {
-    console.log(this.flagChanged);
     return this.dataImg.length > 0;
   }
 

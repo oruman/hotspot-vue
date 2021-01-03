@@ -185,11 +185,11 @@ export default class Profile extends Vue {
   }
 
   private changeAvatar() {
-    this.$router.push("/avatar");
+    this.$router.push("/profile/avatar");
   }
 
   private changePassword() {
-    this.$router.push("/password");
+    this.$router.push("/profile/password");
   }
 }
 </script>

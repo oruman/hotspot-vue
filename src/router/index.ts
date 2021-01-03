@@ -59,12 +59,12 @@ const routes: Array<RouteConfig> = [
     component: () => import("../views/Profile.vue")
   },
   {
-    path: "/avatar",
+    path: "/profile/avatar",
     name: "Change Avatar",
     component: () => import("../views/Avatar.vue")
   },
   {
-    path: "/password",
+    path: "/profile/password",
     name: "Change Password",
     component: () => import("../views/Password.vue")
   },
