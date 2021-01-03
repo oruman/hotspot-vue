@@ -9,6 +9,7 @@ import { Students } from "@/store/modules/students";
 import { MonthSpeaking } from "@/store/modules/monthspeaking";
 import { Audio } from "@/store/modules/audio";
 import { Homework } from "@/store/modules/homework";
+import { Holidays } from "@/store/modules/holidays";
 
 Vue.use(Vuex);
 
@@ -45,6 +46,7 @@ export default new Vuex.Store({
     students: Students,
     monspeaking: MonthSpeaking,
     audio: Audio,
-    homework: Homework
+    homework: Homework,
+    holidays: Holidays
   }
 });

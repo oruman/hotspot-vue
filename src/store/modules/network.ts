@@ -1,13 +1,13 @@
 import { Action, Module, Mutation, VuexModule } from "vuex-module-decorators";
 import axios, { AxiosResponse } from "axios";
-import Vue from "vue";
 
 @Module({ namespaced: true })
 export class Network extends VuexModule {
   private _url = process.env.VUE_APP_API_URL;
   private loadingCount = 0;
   private logged = true;
-  private _files: SimpleObject = {};
+  private _materials: SimpleObject[] = [];
+  private _holidays: SimpleObject[] = [];
 
   public get loading() {
     return this.loadingCount > 0;
@@ -17,8 +17,12 @@ export class Network extends VuexModule {
     return this.logged;
   }
 
-  public get files() {
-    return Object.values(this._files);
+  public get materials() {
+    return this._materials;
+  }
+
+  public get holidays() {
+    return this._holidays;
   }
 
   public get url() {
@@ -47,11 +51,13 @@ export class Network extends VuexModule {
 
   @Mutation
   clearCache() {
-    this._files = {};
+    this._materials = [];
+    this._holidays = [];
   }
 
   @Mutation
-  setFiles(files: SimpleObject[]) {
+  setMaterials(files: SimpleObject[]) {
+    const data: SimpleObject[] = [];
     for (const file of files) {
       if (
         !Object.prototype.hasOwnProperty.call(file, "id") ||
@@ -70,8 +76,44 @@ export class Network extends VuexModule {
         "/view/" +
         encodeURIComponent(file.name);
       newItem.fileKey = file.metadata?.gradeInfo?.filesKey;
-      Vue.set(this._files, file.id, newItem);
+      data.push(newItem);
     }
+    this._materials = data;
+  }
+
+  @Mutation
+  setHolidays(files: SimpleObject[]) {
+    const data: SimpleObject[] = [];
+    for (const file of files) {
+      if (
+        !Object.prototype.hasOwnProperty.call(file, "task") ||
+        !Object.prototype.hasOwnProperty.call(file.task, "id") ||
+        !Object.prototype.hasOwnProperty.call(file.task, "name")
+      )
+        continue;
+      file.taskLink =
+        this._url +
+        "file/" +
+        file.task.id +
+        "/view/" +
+        encodeURIComponent(file.task.name);
+      file.taskFileId = file.task.metadata?.gradeInfo?.filesKey;
+      if (
+        Object.prototype.hasOwnProperty.call(file, "key") &&
+        Object.prototype.hasOwnProperty.call(file.key, "id") &&
+        Object.prototype.hasOwnProperty.call(file.key, "name")
+      ) {
+        file.keyLink =
+          this._url +
+          "file/" +
+          file.key.id +
+          "/view/" +
+          encodeURIComponent(file.key.name);
+        file.keyFileId = file.key.metadata?.gradeInfo?.filesKey;
+      }
+      data.push(file);
+    }
+    this._holidays = data;
   }
 
   @Action({ rawError: true })
@@ -145,24 +187,68 @@ export class Network extends VuexModule {
   }
 
   @Action
-  async GET_FILES(payloads: SimpleObject) {
-    const ids: SimpleObject = {};
-    for (const key in payloads) {
-      if (!Object.prototype.hasOwnProperty.call(payloads, key)) continue;
-      const aspect: string = key[0];
-      for (let i = 0; i < payloads[key].length; i++) {
-        const fileId = payloads[key][i];
-        if (Object.prototype.hasOwnProperty.call(this._files, fileId)) continue;
-        ids[fileId] = aspect;
+  GET_FILES(payloads: SimpleObject) {
+    const ids: number[] = [];
+    const holidays: SimpleObject[] = [];
+    const materialsAspect: SimpleObject = {};
+    if (Object.prototype.hasOwnProperty.call(payloads, "materials")) {
+      for (const key in payloads.materials) {
+        if (!Object.prototype.hasOwnProperty.call(payloads.materials, key))
+          continue;
+        const aspect: string = key[0];
+        for (let i = 0; i < payloads.materials[key].length; i++) {
+          const fileId = payloads.materials[key][i];
+          if (Object.prototype.hasOwnProperty.call(this._materials, fileId))
+            continue;
+          materialsAspect[fileId] = aspect;
+          ids.push(fileId);
+        }
       }
     }
-    const valuesIds = Object.keys(ids);
-    if (!valuesIds.length) return;
+    if (Object.prototype.hasOwnProperty.call(payloads, "holidays")) {
+      for (let i = 0; i < payloads.holidays.length; i++) {
+        if (
+          payloads.holidays[i] == null ||
+          !Object.prototype.hasOwnProperty.call(
+            payloads.holidays[i],
+            "byAspects"
+          )
+        )
+          continue;
+        for (let j = 0; j < payloads.holidays[i].byAspects.length; j++) {
+          if (payloads.holidays[i].byAspects[j] == null) continue;
+          const obj: SimpleObject = {
+            taskIndex: i,
+            aspectId: j
+          };
+          if (
+            Object.prototype.hasOwnProperty.call(
+              payloads.holidays[i].byAspects[j],
+              "theTask"
+            )
+          ) {
+            ids.push(payloads.holidays[i].byAspects[j]["theTask"]);
+            obj.fileIdTask = payloads.holidays[i].byAspects[j]["theTask"];
+          }
+          if (
+            Object.prototype.hasOwnProperty.call(
+              payloads.holidays[i].byAspects[j],
+              "key"
+            )
+          ) {
+            ids.push(payloads.holidays[i].byAspects[j]["key"]);
+            obj.fileIdKey = payloads.holidays[i].byAspects[j]["key"];
+          }
+          holidays.push(obj);
+        }
+      }
+    }
+    if (!ids.length) return;
     this.context.commit("increaseLoadingCount");
-    return await axios
+    return axios
       .post(
         this._url + "file/ids?ignoreTracking=true",
-        JSON.stringify({ ids: valuesIds }),
+        JSON.stringify({ ids: ids }),
         {
           withCredentials: true,
           headers: {
@@ -174,15 +260,36 @@ export class Network extends VuexModule {
         if (!Object.prototype.hasOwnProperty.call(res, "data"))
           return Promise.reject("N/A");
         const data: SimpleObject[] = res.data;
+        const files: SimpleObject = {};
         for (let i = 0; i < data.length; i++) {
+          if (!Object.prototype.hasOwnProperty.call(data[i], "id")) continue;
+          files[data[i].id] = data[i];
+        }
+        const materials: SimpleObject[] = [];
+        for (const fileId in materialsAspect) {
           if (
-            !Object.prototype.hasOwnProperty.call(data[i], "id") ||
-            !Object.prototype.hasOwnProperty.call(ids, data[i].id)
+            !Object.prototype.hasOwnProperty.call(materialsAspect, fileId) ||
+            !Object.prototype.hasOwnProperty.call(files, fileId)
           )
             continue;
-          data[i].aspect = ids[data[i].id];
+          const obj = Object.assign({}, files[fileId]);
+          obj.aspect = materialsAspect[fileId];
+          materials.push(obj);
         }
-        if (data.length) this.context.commit("setFiles", data);
+        if (materials.length) this.context.commit("setMaterials", materials);
+        for (let i = 0; i < holidays.length; i++) {
+          if (
+            Object.prototype.hasOwnProperty.call(holidays[i], "fileIdTask") &&
+            Object.prototype.hasOwnProperty.call(files, holidays[i].fileIdTask)
+          )
+            holidays[i].task = Object.assign({}, files[holidays[i].fileIdTask]);
+          if (
+            Object.prototype.hasOwnProperty.call(holidays[i], "fileIdKey") &&
+            Object.prototype.hasOwnProperty.call(files, holidays[i].fileIdKey)
+          )
+            holidays[i].key = Object.assign({}, files[holidays[i].fileIdKey]);
+        }
+        if (holidays.length) this.context.commit("setHolidays", holidays);
       })
       .catch(err => {
         if (err.response.status == 401) this.context.commit("setUnLogged", {});
@@ -311,6 +418,40 @@ export class Network extends VuexModule {
   }
 
   @Action
+  DELETE_HOLIDAY_HOMEWORK(payloads: SimpleObject) {
+    return axios
+      .delete(this._url + "students/hhw", {
+        withCredentials: true,
+        data: payloads,
+        headers: {
+          "Content-type": "application/json"
+        }
+      })
+      .catch(err => {
+        if (err.response.data && err.response.status == 400)
+          this.context.dispatch("students/GET_DATA_WITHOUT_CACHE", null, {
+            root: true
+          });
+        return Promise.reject(err);
+      })
+      .then((res: AxiosResponse) => {
+        if (
+          Object.prototype.hasOwnProperty.call(res, "data") &&
+          Object.prototype.hasOwnProperty.call(res.data, "student") &&
+          Object.prototype.hasOwnProperty.call(res.data.student, "hhw") &&
+          Object.prototype.hasOwnProperty.call(res.data.student.hhw, "answers")
+        ) {
+          this.context.dispatch(
+            "holidays/SET_ANSWERS",
+            res.data.student.hhw.answers,
+            { root: true }
+          );
+          return Promise.resolve(true);
+        } else return Promise.reject();
+      });
+  }
+
+  @Action
   UPDATE_PROFILE(payloads: SimpleObject) {
     payloads.id = this.context.rootGetters["state/id"];
     this.context.commit("increaseLoadingCount");
@@ -355,6 +496,29 @@ export class Network extends VuexModule {
           });
           return Promise.resolve(res.data);
         } else return Promise.reject();
+      })
+      .finally(() => {
+        this.context.commit("decreaseLoadingCount");
+      });
+  }
+
+  @Action
+  UPDATE_PASSWORD(payloads: SimpleObject) {
+    this.context.commit("increaseLoadingCount");
+    return axios
+      .post(this._url + "user/changepass", payloads, {
+        withCredentials: true,
+        headers: {
+          "Content-type": "application/json"
+        }
+      })
+      .then((res: AxiosResponse) => {
+        if (
+          Object.prototype.hasOwnProperty.call(res, "data") &&
+          res.data.toLowerCase() == "ok"
+        )
+          return Promise.resolve("OK");
+        else return Promise.reject("Wrong");
       })
       .finally(() => {
         this.context.commit("decreaseLoadingCount");

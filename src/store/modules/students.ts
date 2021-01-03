@@ -40,11 +40,27 @@ export class Students extends VuexModule {
       .dispatch("network/GET_DATA", "students", { root: true })
       .then(response => {
         this.context.commit("setList", response);
+        const item = response.find((el: SimpleObject) => {
+          return (
+            Object.prototype.hasOwnProperty.call(el, "hhw") &&
+            Object.prototype.hasOwnProperty.call(el.hhw, "answers")
+          );
+        });
+        if (item)
+          this.context.dispatch("holidays/SET_ANSWERS", item.hhw.answers, {
+            root: true
+          });
         this.context.commit("setCacheTime", Date.now() + 12 * 60 * 60 * 1000);
       })
       .catch(() => {
         console.log("Students ERROR");
       });
+  }
+
+  @Action
+  GET_DATA_WITHOUT_CACHE() {
+    this.context.commit("setCacheTime", 0);
+    return this.context.dispatch("GET_DATA");
   }
 
   @Action

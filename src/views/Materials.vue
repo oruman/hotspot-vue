@@ -42,7 +42,7 @@ export default class Materials extends Vue {
 
   private get materials() {
     const data: SimpleObject[] = this.$store
-      ? this.$store.getters["network/files"]
+      ? this.$store.getters["network/materials"]
       : [];
     return data.filter(item => item.aspect == this.activeTab);
   }

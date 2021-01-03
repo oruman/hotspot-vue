@@ -7,8 +7,11 @@
             <v-card>
               <v-card-text>
                 <v-flex class="mb-4">
-                  <v-avatar size="96" class="mr-4">
-                    <img :src="avatar" alt="Avatar" />
+                  <v-avatar size="96" class="mr-4" color="primary">
+                    <img v-if="avatar" :src="avatar" alt="Avatar" />
+                    <v-icon v-else dark size="80">
+                      mdi-account-circle
+                    </v-icon>
                   </v-avatar>
                   <v-btn small @click="changeAvatar" :disabled="isLoading">
                     <v-icon>mdi-account-circle</v-icon>
@@ -24,7 +27,7 @@
                 />
               </v-card-text>
               <v-card-actions>
-                <v-btn small>
+                <v-btn small @click="changePassword" :disabled="isLoading">
                   <v-icon>mdi-form-textbox-password</v-icon>
                   Change password
                 </v-btn>
@@ -183,6 +186,10 @@ export default class Profile extends Vue {
 
   private changeAvatar() {
     this.$router.push("/avatar");
+  }
+
+  private changePassword() {
+    this.$router.push("/password");
   }
 }
 </script>

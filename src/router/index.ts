@@ -62,6 +62,16 @@ const routes: Array<RouteConfig> = [
     path: "/avatar",
     name: "Change Avatar",
     component: () => import("../views/Avatar.vue")
+  },
+  {
+    path: "/password",
+    name: "Change Password",
+    component: () => import("../views/Password.vue")
+  },
+  {
+    path: "/hhw",
+    name: "Holidays Homework",
+    component: () => import("../views/HolidayHomework.vue")
   }
 ];
 

@@ -34,7 +34,7 @@
                     color="primary"
                     block
                     :disabled="!valid || isLoading"
-                    @click="submit"
+                    @click.prevent="submit"
                     >Sign in</v-btn
                   >
                 </v-form>
@@ -62,7 +62,7 @@ export default class Curriculum extends Vue {
   private password = "";
   private keepMeSignedIn = true;
 
-  private alreadySubmited = false;
+  private alreadySubmitted = false;
 
   private emailRules = [
     (v: string) => !!v || "E-mail is required",
@@ -78,10 +78,10 @@ export default class Curriculum extends Vue {
   private errorMessage = "";
 
   private submit() {
-    if (this.alreadySubmited) return;
-    this.alreadySubmited = true;
+    if (this.alreadySubmitted) return;
+    this.alreadySubmitted = true;
     setTimeout(() => {
-      this.alreadySubmited = false;
+      this.alreadySubmitted = false;
     }, 500);
     const form = this.$refs.form as HTMLFormElement;
     if (!form.validate()) return;
@@ -95,7 +95,7 @@ export default class Curriculum extends Vue {
         if (this.$store.getters["isLogged"]) this.$router.push("/");
         else Promise.reject("not logged");
       })
-      .catch((err) => {
+      .catch(err => {
         const response = err.response;
         if (
           Object.prototype.hasOwnProperty.call(response, "data") &&

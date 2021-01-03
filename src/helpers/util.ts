@@ -5,6 +5,10 @@ export default class Utils {
       : "00:00";
   }
 
+  static nl2br(str: string) {
+    return str.replace(/(?:\r\n|\r|\n)/g, "<br />");
+  }
+
   static downloadURL(uri: string, name = "") {
     const link = document.createElement("a");
     // If you don't know the name or want to use

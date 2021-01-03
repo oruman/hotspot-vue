@@ -3,8 +3,11 @@
     <v-navigation-drawer app fixed v-model="showMenu">
       <v-list dense>
         <v-list-item>
-          <v-list-item-avatar size="60">
-            <v-img :src="avatar"></v-img>
+          <v-list-item-avatar size="60" color="primary">
+            <v-img v-if="avatar" :src="avatar" />
+            <v-icon v-else dark size="50">
+              mdi-account-circle
+            </v-icon>
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title class="wrap-normal">
@@ -82,6 +85,13 @@ export default class TopToolbar extends Vue {
       name: "Hall Of Fame",
       click: () => {
         this.routeTo("/hall-of-fame");
+      }
+    },
+    {
+      icon: "mdi-calendar-heart",
+      name: "Holidays Homework",
+      click: () => {
+        this.routeTo("/hhw");
       }
     },
     {

@@ -80,11 +80,13 @@ export class Grades extends VuexModule {
 
   @Mutation
   setRols(data: SimpleObject[]) {
+    if (!data) return;
     this._rols = data.sort((a, b) => a.id - b.id);
   }
 
   @Mutation
   setTols(data: SimpleObject[]) {
+    if (!data) return;
     data = data.sort((a, b) => a.id - b.id);
     const newData: string[][] = [];
     for (const item of data) {
@@ -115,10 +117,24 @@ export class Grades extends VuexModule {
         if (!response || !Array.isArray(response) || !response.length)
           return Promise.reject("N/A");
         const res = response[0];
+        const reqFiles: SimpleObject = {
+          holidays: [],
+          materials: {}
+        };
         if (Object.prototype.hasOwnProperty.call(res, "curriculum"))
           this.context.commit("setCurriculum", res.curriculum);
         if (Object.prototype.hasOwnProperty.call(res, "files"))
-          this.context.dispatch("network/GET_FILES", res.files, { root: true });
+          reqFiles.materials = res.files;
+        if (
+          Object.prototype.hasOwnProperty.call(res, "hhw") &&
+          Object.prototype.hasOwnProperty.call(res.hhw, "tasks")
+        )
+          reqFiles.holidays = res.hhw.tasks;
+        if (
+          reqFiles.holidays.length ||
+          Object.values(reqFiles.materials).length
+        )
+          this.context.dispatch("network/GET_FILES", reqFiles, { root: true });
         const rolDelayWeeks = Object.prototype.hasOwnProperty.call(
           res,
           "rol_delay_weeks"
@@ -132,6 +148,7 @@ export class Grades extends VuexModule {
           );
         if (Object.prototype.hasOwnProperty.call(res, "tol"))
           this.context.commit("setTols", res.tol);
+        this.context.commit("setCacheTime", Date.now() + 10 * 60 * 1000);
       })
       .catch(() => {
         console.log("Grades ERROR");
