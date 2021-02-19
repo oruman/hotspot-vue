@@ -1,40 +1,69 @@
 <template>
-  <v-simple-table>
-    <template v-slot:default>
-      <thead>
-        <tr>
-          <th>Test</th>
-          <th
-            v-for="(total, index) in dataForView.Total"
-            :key="index"
-            class="text-center"
-          >
-            #{{ index + 1 }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(value, aspect) of dataForView" :key="aspect">
-          <th>{{ aspect }}</th>
-          <td
-            class="text-center"
-            v-for="(text, index) in value"
-            :key="`${aspect}-${index}`"
-          >
-            {{ formatValue(text) }}
-          </td>
-        </tr>
-      </tbody>
-    </template>
-  </v-simple-table>
+  <v-sheet outlined dark class="pa-3">
+    <h6 class="title text-uppercase">Performance</h6>
+    <v-carousel
+      dark
+      height="270"
+      hide-delimiters
+      :show-arrows="false"
+      v-model="carouselModel"
+    >
+      <v-carousel-item>
+        <apexchart height="225" :options="chartOptions" :series="dataSeries" />
+      </v-carousel-item>
+      <v-carousel-item>
+        <v-sheet tile>
+          <v-simple-table>
+            <template v-slot:default>
+              <thead>
+                <tr>
+                  <th>Test</th>
+                  <th
+                    v-for="(total, index) in dataForView.Total"
+                    :key="index"
+                    class="text-center"
+                  >
+                    {{ index + 1 }} MON
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(value, aspect) of dataForView" :key="aspect">
+                  <th>{{ aspect }}</th>
+                  <td
+                    class="text-center"
+                    v-for="(text, index) in value"
+                    :key="`${aspect}-${index}`"
+                  >
+                    {{ formatValue(text) }}
+                  </td>
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+        </v-sheet>
+      </v-carousel-item>
+    </v-carousel>
+    <v-sheet class="d-flex justify-space-between">
+      <v-btn :disabled="isGraph" @click="carouselModel = 0">
+        <v-icon>mdi-chevron-left</v-icon> Show Graph
+      </v-btn>
+      <v-btn :disabled="!isGraph" @click="carouselModel = 1">
+        Show Table <v-icon>mdi-chevron-right</v-icon>
+      </v-btn>
+    </v-sheet>
+  </v-sheet>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { aspectsName } from "@/data/data";
+import {DefaultChartOptions} from "@/data/charoptions";
 
 @Component
 export default class TestTable extends Vue {
+  carouselModel = 0;
+
   mounted() {
     this.$store.dispatch("lessons/GET_DATA");
   }
@@ -86,6 +115,34 @@ export default class TestTable extends Vue {
     }
     newData["Total"] = totalArray;
     return newData;
+  }
+
+  private get dataSeries() {
+    const newData: number[] = [];
+    newData.push(0);
+    const oldData = this.dataForView;
+    if (Object.prototype.hasOwnProperty.call(oldData, "Total")) {
+      for (const item of this.dataForView["Total"]) newData.push(item);
+    }
+    return [
+      {
+        name: "Average",
+        data: newData
+      }
+    ];
+  }
+
+  private get chartOptions() {
+    const customOptions = {
+      xaxis: {
+        categories: ["START", "1 MON", "2 MON", "3 MON", "4 MON"]
+      }
+    };
+    return { ...DefaultChartOptions, ...customOptions };
+  }
+
+  private get isGraph() {
+    return this.carouselModel === 0;
   }
 
   protected getNameForAspect(id: number) {

@@ -4,7 +4,7 @@
     <v-main>
       <router-view></router-view>
     </v-main>
-    <BottomNav v-if="isLogged"></BottomNav>
+    <!-- <BottomNav v-if="isLogged"></BottomNav> -->
     <AudioPlayer v-if="isLogged"></AudioPlayer>
     <Recorder v-if="isLogged"></Recorder>
     <v-footer v-if="!isLogged">

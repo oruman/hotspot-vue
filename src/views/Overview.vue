@@ -1,10 +1,13 @@
 <template>
-  <v-container class="block-height">
-    <h6 class="title">Exam</h6>
-    <TestTable></TestTable>
-    <h6 class="title">Attendance</h6>
-    <MarkTable class="block-height-child"></MarkTable>
-  </v-container>
+  <v-layout column wrap>
+    <v-flex>
+      <TestTable />
+    </v-flex>
+    <v-flex class="pa-3">
+      <h6 class="title text-uppercase">Attendance</h6>
+      <MarkTable />
+    </v-flex>
+  </v-layout>
 </template>
 
 <script lang="ts">
@@ -18,20 +21,4 @@ import TestTable from "@/components/TestTable.vue";
 export default class Overview extends Vue {}
 </script>
 
-<style scoped lang="scss">
-.container {
-  display: flex;
-  flex-direction: column;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  position: absolute;
-  overflow-y: auto;
-}
-.block-height-child {
-  overflow-y: hidden;
-  flex-grow: 1;
-  min-height: 200px;
-}
-</style>
+<style scoped lang="scss"></style>

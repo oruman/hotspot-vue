@@ -1,14 +1,8 @@
 <template>
   <div>
-    <v-navigation-drawer app fixed v-model="showMenu">
+    <v-navigation-drawer app fixed dark v-model="showMenu">
       <v-list dense>
         <v-list-item>
-          <v-list-item-avatar size="60" color="primary">
-            <v-img v-if="avatar" :src="avatar" />
-            <v-icon v-else dark size="50">
-              mdi-account-circle
-            </v-icon>
-          </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title class="wrap-normal">
               {{ name }}
@@ -26,7 +20,7 @@
           <v-divider v-if="item.divider" :key="`${index}_div`"></v-divider>
           <v-list-item v-else @click="item.click" :key="`${index}_item`">
             <v-list-item-action>
-              <v-icon>{{ item.icon }}</v-icon>
+              <v-icon color="primary">{{ item.icon }}</v-icon>
             </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title>{{ item.name }}</v-list-item-title>
@@ -60,35 +54,41 @@ export default class TopToolbar extends Vue {
   private showMenu = false;
   private itemsMenu = [
     {
-      icon: "mdi-microphone-variant",
-      name: "Think Out Loud",
+      icon: "mdi-chart-line-variant",
+      name: "Performance",
       click: () => {
-        this.routeTo("/tol");
+        this.routeTo("/");
       }
     },
     {
-      icon: "mdi-book-open-variant",
-      name: "Read Out Loud",
+      divider: true
+    },
+    {
+      icon: "mdi-spellcheck",
+      name: "Grammar",
       click: () => {
-        this.routeTo("/rol");
+        this.routeTo("/grammar");
+      }
+    },
+    {
+      icon: "mdi-account-voice",
+      name: "Speaking",
+      click: () => {
+        this.routeTo("/speaking");
       }
     },
     {
       icon: "mdi-headphones",
-      name: "Monthly Homework",
+      name: "Listening",
       click: () => {
-        this.routeTo("/monspeaking");
+        this.routeTo("/listening");
       }
     },
     {
-      icon: "mdi-seal-variant",
-      name: "Hall Of Fame",
-      click: () => {
-        this.routeTo("/hall-of-fame");
-      }
+      divider: true
     },
     {
-      icon: "mdi-calendar-heart",
+      icon: "mdi-glass-wine",
       name: "Holidays Homework",
       click: () => {
         this.routeTo("/hhw");
@@ -108,6 +108,7 @@ export default class TopToolbar extends Vue {
 
   mounted() {
     this.$store.dispatch("state/GET_DATA");
+    this.showMenu = this.$vuetify.breakpoint.mdAndUp;
   }
 
   toggleMenu(): void {
