@@ -39,11 +39,6 @@ const routes: Array<RouteConfig> = [
       import(/* webpackChunkName: "speaking" */ "../views/MonSpeaking.vue")
   },
   {
-    path: "/hall-of-fame",
-    name: "Hall of Fame",
-    component: () => import("../views/HallOfFame.vue")
-  },
-  {
     path: "/rol",
     name: "Read Out Loud",
     component: () => import("../views/ReadOutLoud.vue")
