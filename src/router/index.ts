@@ -5,6 +5,8 @@ import Curriculum from "@/views/Curriculum.vue";
 import Materials from "@/views/Materials.vue";
 import Login from "@/views/Login.vue";
 import store from "@/store";
+import Speaking from "@/views/Speaking.vue";
+import Grammar from "@/views/Grammar.vue";
 
 Vue.use(VueRouter);
 
@@ -18,6 +20,16 @@ const routes: Array<RouteConfig> = [
     path: "/",
     name: "Overview",
     component: Overview
+  },
+  {
+    path: "/grammar",
+    name: "Grammar",
+    component: Grammar
+  },
+  {
+    path: "/speaking",
+    name: "Speaking",
+    component: Speaking
   },
   {
     path: "/curriculum",
