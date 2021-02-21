@@ -55,7 +55,9 @@ export default class HallOfFame extends Vue {
   }
 
   private get sortedList() {
-    const studentsIds: number[] = Object.keys(this.studentsList);
+    const studentsIds: number[] = Object.keys(this.studentsList).map(item =>
+      parseInt(item, 10)
+    );
     studentsIds.sort((a, b) => {
       return this.compareScores(a, b, this.countMonth - 1);
     });
@@ -91,14 +93,14 @@ export default class HallOfFame extends Vue {
       : "";
   }
 
-  private scoreForStudent(studentId, month) {
+  private scoreForStudent(studentId: number, month: number) {
     const numMonth = month - 1;
     return this.averageMarks[numMonth] && this.averageMarks[numMonth][studentId]
       ? this.averageMarks[numMonth][studentId].toFixed(1)
       : "";
   }
 
-  private classForScore(studentId, month) {
+  private classForScore(studentId: number, month: number) {
     const numMonth = month - 1;
     const num =
       this.averageMarks[numMonth] && this.averageMarks[numMonth][studentId]
