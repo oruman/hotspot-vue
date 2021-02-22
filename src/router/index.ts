@@ -5,8 +5,8 @@ import Curriculum from "@/views/Curriculum.vue";
 import Materials from "@/views/Materials.vue";
 import Login from "@/views/Login.vue";
 import store from "@/store";
-import Speaking from "@/views/Speaking.vue";
-import Grammar from "@/views/Grammar.vue";
+import AspectView from "@/views/AspectView.vue";
+import { Aspects } from "@/data/data";
 
 Vue.use(VueRouter);
 
@@ -24,12 +24,20 @@ const routes: Array<RouteConfig> = [
   {
     path: "/grammar",
     name: "Grammar",
-    component: Grammar
+    component: AspectView,
+    props: { aspect: Aspects.GRAMMAR }
   },
   {
     path: "/speaking",
     name: "Speaking",
-    component: Speaking
+    component: AspectView,
+    props: { aspect: Aspects.SPEAKING }
+  },
+  {
+    path: "/listening",
+    name: "Listening",
+    component: AspectView,
+    props: { aspect: Aspects.LISTENING }
   },
   {
     path: "/curriculum",
