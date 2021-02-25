@@ -38,15 +38,6 @@ const routes: Array<RouteConfig> = [
     props: { aspect: Aspects.LISTENING }
   },
   {
-    path: "/monspeaking",
-    name: "Monthly Speaking",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "speaking" */ "../views/MonSpeaking.vue")
-  },
-  {
     path: "/profile",
     name: "Profile Settings",
     component: () => import("../views/Profile.vue")
