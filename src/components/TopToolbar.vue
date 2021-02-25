@@ -134,7 +134,7 @@ export default class TopToolbar extends Vue {
   private doNothing(): void {}
 
   private routeTo(path: string) {
-    this.$router.push(path);
+    if (this.$route.path !== path) this.$router.push(path);
   }
 
   private get routeName() {

@@ -5,7 +5,9 @@ export class Grades extends VuexModule {
   private cacheTime = 0;
   private _curriculum: SimpleObject[] = [];
   private _rols: SimpleObject[] = [];
-  private _tols: string[][] = [];
+  private _tols: SimpleObject[] = [];
+  private _rolsDelayWeek = 0;
+  private _tolsDelayWeek = 0;
 
   get curriculum() {
     return this._curriculum;
@@ -81,15 +83,21 @@ export class Grades extends VuexModule {
   @Mutation
   setRols(data: SimpleObject[]) {
     if (!data) return;
-    this._rols = data.sort((a, b) => a.id - b.id);
+    this._rols = data
+      .filter((item: SimpleObject) => item.id > this._rolsDelayWeek)
+      .sort((a, b) => a.id - b.id);
   }
 
   @Mutation
   setTols(data: SimpleObject[]) {
     if (!data) return;
-    data = data.sort((a, b) => a.id - b.id);
-    const newData: string[][] = [];
+    const newData: SimpleObject[] = [];
+    let weekNum = 1;
     for (const item of data) {
+      if (weekNum < this._tolsDelayWeek) {
+        weekNum++;
+        continue;
+      }
       let i = 1;
       const newItems: string[] = [];
       while (Object.prototype.hasOwnProperty.call(item, i)) {
@@ -102,9 +110,23 @@ export class Grades extends VuexModule {
         if (text) newItems.push(text);
         i++;
       }
-      newData.push(newItems);
+      newData.push({
+        id: weekNum,
+        items: newItems
+      });
+      weekNum++;
     }
     this._tols = newData;
+  }
+
+  @Mutation
+  setRolsDelay(weekCount: number) {
+    this._rolsDelayWeek = weekCount;
+  }
+
+  @Mutation
+  setTolsDelay(weekCount: number) {
+    this._tolsDelayWeek = weekCount;
   }
 
   @Action
@@ -141,6 +163,14 @@ export class Grades extends VuexModule {
         )
           ? res["rol_delay_weeks"]
           : 0;
+        this.context.commit("setRolsDelay", rolDelayWeeks);
+        const tolDelayWeeks = Object.prototype.hasOwnProperty.call(
+          res,
+          "tol_delay_weeks"
+        )
+          ? res["tol_delay_weeks"]
+          : 0;
+        this.context.commit("setTolsDelay", rolDelayWeeks);
         if (Object.prototype.hasOwnProperty.call(res, "rol"))
           this.context.commit(
             "setRols",

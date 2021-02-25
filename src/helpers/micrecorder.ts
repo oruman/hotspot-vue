@@ -22,18 +22,23 @@ export default class MicRecorder {
   private isDisabled = false;
   private isStopped = false;
   private countStart = 0;
+  public onError = (message: string) => {
+    console.log(message);
+  };
 
   constructor() {
     this.getStream();
   }
 
   private getStream() {
-    if (typeof navigator.mediaDevices.getUserMedia == "undefined") {
+    if (typeof navigator.mediaDevices == "undefined" || typeof navigator.mediaDevices.getUserMedia == "undefined") {
       const getUserMedia: NavigatorGetUserMedia =
         navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
         navigator.mozGetUserMedia ||
         navigator.msGetUserMedia;
+      if (typeof getUserMedia != "function")
+        throw new Error("Recorder is not exists");
       getUserMedia(
         { audio: true },
         this.setMediaRecorder.bind(this),
@@ -170,10 +175,12 @@ export default class MicRecorder {
 
   private error(e: MediaStreamError) {
     this.isDisabled = true;
-    console.log(e.message);
-    throw new Error(
-      "Unable to access microphone, please check system settings."
-    );
+    let message: string = e.message ? e.message : "Upps...";
+    if (message === "Permission denied")
+      message = "Unable to access microphone, please check system settings.";
+    message = "Recorder Error: " + message;
+    this.onError(message);
+    throw new Error(message);
   }
 
   private static testAudioTypes() {

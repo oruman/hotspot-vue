@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" :persistent="recording">
+  <v-dialog max-width="600" v-model="dialog" :persistent="recording">
     <v-card>
       <v-card-title class="headline">
         Record Audio
@@ -30,6 +30,7 @@ import { Component, Vue } from "vue-property-decorator";
 import { mapGetters } from "vuex";
 import MicRecorder from "@/helpers/micrecorder";
 import Utils from "@/helpers/util";
+import {Errors} from "@/store/modules/errors";
 
 @Component({
   computed: mapGetters(["isLoading"])
@@ -76,10 +77,17 @@ export default class Recorder extends Vue {
   private setMicRecorder() {
     try {
       this.micRecorder = new MicRecorder();
+      this.micRecorder.onError = (message: string) => {
+        this.$store.dispatch("errors/ADD", message);
+        this.dialog = false;
+      };
       this.totalDuration = 0;
       this.isDialog = true;
       // eslint-disable-next-line no-empty
-    } catch (e) {}
+    } catch (e) {
+      this.$store.dispatch("errors/ADD", "Recorder is not exist");
+      this.$store.dispatch("audio/SET_RECORD", {});
+    }
   }
 
   private get name() {
@@ -92,8 +100,13 @@ export default class Recorder extends Vue {
 
   private record() {
     if (!this.micRecorder) return;
-    this.recording = true;
-    this.micRecorder.record();
+    try {
+      this.micRecorder.record();
+      this.recording = true;
+    } catch (e) {
+      const message = e.message || "Error during record";
+      this.$store.dispatch("errors/ADD", message);
+    }
   }
 
   private pause() {

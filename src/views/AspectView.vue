@@ -14,10 +14,10 @@
               >Week {{ weekIndex + 1 }}</strong
             >
             <v-spacer />
-            <span>{{ dates[weekIndex] }}</span>
+            <span>{{ week.date }}</span>
           </v-card>
           <v-card :key="'week_data_' + weekIndex" class="mb-3">
-            <template v-for="(weekItem, weekItemIndex) of week">
+            <template v-for="(weekItem, weekItemIndex) of week.items">
               <v-card-title
                 :key="'week_header_' + weekIndex + '_' + weekItemIndex"
               >
@@ -41,8 +41,24 @@
                 </ul>
               </v-card-text>
               <v-divider
-                v-if="weekItemIndex < week.length - 1"
+                v-if="weekItemIndex < week.items.length - 1"
                 :key="'week_divider_' + weekIndex + '_' + weekItemIndex"
+              />
+            </template>
+            <ReadOutLoud
+              v-if="week.rol"
+              v-bind:text="week.rol"
+              v-bind:dead-line="week.deadLine"
+              v-bind:week-num="weekIndex + 1"
+            />
+            <template v-if="week.tols">
+              <ThinkOutLoud
+                v-for="(tolItem, tolIndex) of week.tols"
+                :key="['tols', weekIndex, tolIndex].join('_')"
+                v-bind:text="tolItem"
+                v-bind:week-num="weekIndex + 1"
+                v-bind:day-num="tolIndex + 1"
+                v-bind:dead-line="week.deadLine"
               />
             </template>
           </v-card>
@@ -96,10 +112,14 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { Aspects } from "@/data/data";
 import moment from "moment";
-
-@Component
+import ReadOutLoud from "@/components/ReadOutLoud.vue";
+import ThinkOutLoud from "@/components//ThinkOutLoud.vue";
+@Component({
+  components: { ReadOutLoud, ThinkOutLoud }
+})
 export default class AspectView extends Vue {
   @Prop({ default: Aspects.GRAMMAR }) readonly aspect!: number;
+  private delayToLesson = -2;
   private showMenu = false;
 
   mounted() {
@@ -107,6 +127,100 @@ export default class AspectView extends Vue {
     this.$store.dispatch("lessons/GET_DATA");
   }
 
+  private get dates() {
+    const arrDates: string[] = [];
+    const data = this.$store ? this.$store.getters["lessons/marks"] : [];
+    for (const item of data) {
+      if (item.aspect == this.aspect) arrDates.push(item.date);
+    }
+    return arrDates;
+  }
+
+  private get rols() {
+    const arr: string[] = [];
+    if (this.aspect !== Aspects.LISTENING) return arr;
+    const source = this.$store ? this.$store.getters["grades/rols"] : [];
+    for (const item of source) {
+      if (!item.id || !item.te) continue;
+      arr[item.id - 1] = item.te;
+    }
+    return arr;
+  }
+
+  private get tols() {
+    const arr: string[][] = [];
+    if (this.aspect !== Aspects.SPEAKING) return arr;
+    const source = this.$store ? this.$store.getters["grades/tols"] : [];
+    for (const item of source) {
+      if (!item.id || !item.items) continue;
+      arr[item.id] = item.items;
+    }
+    return arr;
+  }
+
+  private get keys() {
+    const ret = [];
+    if (
+      this.dataForView.length &&
+      this.dataForView[0] &&
+      Object.prototype.hasOwnProperty.call(this.dataForView[0], "items")
+    ) {
+      for (const item of this.dataForView[0].items) {
+        if (!Object.prototype.hasOwnProperty.call(item, "tasks")) continue;
+        for (const task of item.tasks) ret.push(task);
+      }
+    }
+    return ret;
+  }
+
+  private get dataForView() {
+    const newData: SimpleObject[] = [];
+    const data = this.$store ? this.$store.getters["grades/curriculum"] : [];
+    let numWeek = 0;
+    for (const items of data) {
+      const newItem: SimpleObject[] = [];
+      const dateNum = this.dates[numWeek] || Date.now();
+      const dateMomentum = moment(dateNum);
+      for (const elOfItems of items) {
+        if (elOfItems.aspect != this.aspect) continue;
+
+        const theme: string[] = [];
+        const tasks: SimpleObject[] = [];
+
+        for (const el of elOfItems.items) {
+          if (el.link) tasks.push(el);
+          else if (el.text) theme.push(el.text);
+        }
+        if (!theme.length) theme.push(elOfItems.title);
+        newItem.push({
+          theme: theme.join(" / "),
+          tasks
+        });
+      }
+      const week: SimpleObject = {
+        date: dateMomentum.format("YYYY-MM-DD"),
+        deadLine: dateMomentum
+          .add(this.delayToLesson, "day")
+          .format("YYYY-MM-DD HH:mm"),
+        items: newItem
+      };
+      if (this.rols[numWeek]) week.rol = this.rols[numWeek];
+      if (this.tols[numWeek]) week.tols = this.tols[numWeek];
+      console.log(week);
+      newData.push(week);
+      numWeek++;
+    }
+    return newData;
+  }
+
+  private get materials() {
+    const data: SimpleObject[] = this.$store
+      ? this.$store.getters["network/materials"]
+      : [];
+    return data.filter(item => item.aspect == this.aspect);
+  }
+
+  //<editor-fold defaultstate="collapsed" desc="Work with menu">
   private get isMenu() {
     return this.showMenu || this.isRightAppend;
   }
@@ -131,60 +245,7 @@ export default class AspectView extends Vue {
       this.showMenu = true;
     }, 100);
   }
-
-  private get dates() {
-    const arrDates: string[] = [];
-    const data = this.$store ? this.$store.getters["lessons/marks"] : [];
-    for (const item of data) {
-      if (item.aspect != this.aspect) continue;
-      const date = moment(item.date).format("YYYY-MM-DD");
-      arrDates.push(date);
-    }
-    return arrDates;
-  }
-
-  private get keys() {
-    const ret = [];
-    if (this.dataForView.length && this.dataForView[0]) {
-      for (const item of this.dataForView[0]) {
-        if (!Object.prototype.hasOwnProperty.call(item, "tasks")) continue;
-        for (const task of item.tasks) ret.push(task);
-      }
-    }
-    return ret;
-  }
-
-  private get dataForView() {
-    const newData: SimpleObject[][] = [];
-    const data = this.$store ? this.$store.getters["grades/curriculum"] : [];
-    for (const items of data) {
-      const newItem: SimpleObject[] = [];
-      for (const elOfItems of items) {
-        if (elOfItems.aspect != this.aspect) continue;
-
-        const theme: string[] = [];
-        const tasks: SimpleObject[] = [];
-        for (const el of elOfItems.items) {
-          if (el.link) tasks.push(el);
-          else if (el.text) theme.push(el.text);
-        }
-        if (!theme.length) theme.push(elOfItems.title);
-        newItem.push({
-          theme: theme.join(" / "),
-          tasks
-        });
-      }
-      newData.push(newItem);
-    }
-    return newData;
-  }
-
-  private get materials() {
-    const data: SimpleObject[] = this.$store
-      ? this.$store.getters["network/materials"]
-      : [];
-    return data.filter(item => item.aspect == this.aspect);
-  }
+  //</editor-fold>
 }
 </script>
 

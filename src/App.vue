@@ -4,7 +4,6 @@
     <v-main>
       <router-view></router-view>
     </v-main>
-    <!-- <BottomNav v-if="isLogged"></BottomNav> -->
     <AudioPlayer v-if="isLogged"></AudioPlayer>
     <Recorder v-if="isLogged"></Recorder>
     <v-footer v-if="!isLogged">
@@ -20,7 +19,6 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import TopToolbar from "./components/TopToolbar.vue";
-import BottomNav from "./components/BottomNav.vue";
 import AudioPlayer from "@/components/AudioPlayer.vue";
 import Recorder from "@/components/Recorder.vue";
 import Notifier from "@/components/Notifier.vue";
@@ -30,8 +28,7 @@ import Notifier from "@/components/Notifier.vue";
     Notifier,
     Recorder,
     AudioPlayer,
-    TopToolbar,
-    BottomNav
+    TopToolbar
   }
 })
 export default class extends Vue {

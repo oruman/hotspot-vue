@@ -1,8 +1,6 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Overview from "@/views/Overview.vue";
-import Curriculum from "@/views/Curriculum.vue";
-import Materials from "@/views/Materials.vue";
 import Login from "@/views/Login.vue";
 import store from "@/store";
 import AspectView from "@/views/AspectView.vue";
@@ -40,16 +38,6 @@ const routes: Array<RouteConfig> = [
     props: { aspect: Aspects.LISTENING }
   },
   {
-    path: "/curriculum",
-    name: "Curriculum",
-    component: Curriculum
-  },
-  {
-    path: "/materials",
-    name: "Materials",
-    component: Materials
-  },
-  {
     path: "/monspeaking",
     name: "Monthly Speaking",
     // route level code-splitting
@@ -57,16 +45,6 @@ const routes: Array<RouteConfig> = [
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "speaking" */ "../views/MonSpeaking.vue")
-  },
-  {
-    path: "/rol",
-    name: "Read Out Loud",
-    component: () => import("../views/ReadOutLoud.vue")
-  },
-  {
-    path: "/tol",
-    name: "Think Out Loud",
-    component: () => import("../views/ThinkOutLoud.vue")
   },
   {
     path: "/profile",
