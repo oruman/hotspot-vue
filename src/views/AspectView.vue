@@ -239,6 +239,7 @@ export default class AspectView extends Vue {
 .right-panel-append {
   width: 256px;
   max-width: 256px;
+  min-width: 256px;
 }
 
 .right-panel-append ::v-deep > aside {
@@ -250,5 +251,6 @@ export default class AspectView extends Vue {
 
 .right-panel-float {
   max-width: 0;
+  min-width: 0;
 }
 </style>
