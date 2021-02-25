@@ -2,11 +2,20 @@
   <v-layout>
     <v-flex>
       <v-container fluid>
+        <v-btn
+          fab
+          tile
+          dark
+          fixed
+          small
+          @click="toggleMenu"
+          class="d-lg-none"
+          style="top: 58px; right: 2px;"
+        >
+          <v-icon>mdi-arrow-expand-left</v-icon>
+        </v-btn>
         <h4 class="title text-uppercase">
           Homework
-          <v-icon @click="toggleMenu" style="float: right" class="d-lg-none"
-            >mdi-arrow-expand-left</v-icon
-          >
         </h4>
         <template v-for="(week, weekIndex) of dataForView">
           <v-card flat class="d-flex" :key="'week_header_' + weekIndex">
