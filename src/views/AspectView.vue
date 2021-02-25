@@ -75,44 +75,11 @@
       </v-container>
     </v-flex>
     <v-flex :class="rightClass">
-      <v-navigation-drawer fixed right clipped v-model="isMenu">
-        <v-list dense>
-          <template v-if="keys">
-            <v-list-item-title
-              class="text-uppercase text-center text-h5 font-weight-bold"
-              >Keys</v-list-item-title
-            >
-            <v-list-item
-              dark
-              v-for="(task, taskIndex) in keys"
-              :key="'task_' + taskIndex"
-            >
-              <v-sheet class="pa-2 mb-2 rounded" color="#e0e0e0" width="100%">
-                <a :href="task.link" target="_blank">{{ task.text }}</a>
-              </v-sheet>
-            </v-list-item>
-          </template>
-          <template v-if="materials.length">
-            <v-list-item-title
-              class="text-uppercase text-center text-h5 font-weight-bold"
-              >Materials</v-list-item-title
-            >
-            <v-list-item
-              dark
-              v-for="(material, materialIndex) in materials"
-              :key="'material_' + materialIndex"
-            >
-              <v-sheet class="pa-2 mb-2 rounded" color="#e0e0e0">
-                <a
-                  :href="material.link"
-                  target="_blank"
-                  v-text="material.name"
-                ></a>
-              </v-sheet>
-            </v-list-item>
-          </template>
-        </v-list>
-      </v-navigation-drawer>
+      <RightPanel
+        v-bind:aspect="aspect"
+        v-bind:keys="keys"
+        v-bind:show-menu="isMenu"
+      />
     </v-flex>
   </v-layout>
 </template>
@@ -123,8 +90,9 @@ import { Aspects } from "@/data/data";
 import moment from "moment";
 import ReadOutLoud from "@/components/ReadOutLoud.vue";
 import ThinkOutLoud from "@/components//ThinkOutLoud.vue";
+import RightPanel from "@/components/RightPanel.vue";
 @Component({
-  components: { ReadOutLoud, ThinkOutLoud }
+  components: { ReadOutLoud, ThinkOutLoud, RightPanel }
 })
 export default class AspectView extends Vue {
   @Prop({ default: Aspects.GRAMMAR }) readonly aspect!: number;
@@ -215,21 +183,17 @@ export default class AspectView extends Vue {
       };
       if (this.rols[numWeek]) week.rol = this.rols[numWeek];
       if (this.tols[numWeek]) week.tols = this.tols[numWeek];
-      console.log(week);
       newData.push(week);
       numWeek++;
     }
     return newData;
   }
 
-  private get materials() {
-    const data: SimpleObject[] = this.$store
-      ? this.$store.getters["network/materials"]
-      : [];
-    return data.filter(item => item.aspect == this.aspect);
+  //<editor-fold defaultstate="collapsed" desc="Work with menu">
+  private get isRightAppend() {
+    return this.$vuetify.breakpoint.lgAndUp;
   }
 
-  //<editor-fold defaultstate="collapsed" desc="Work with menu">
   private get isMenu() {
     return this.showMenu || this.isRightAppend;
   }
@@ -237,10 +201,6 @@ export default class AspectView extends Vue {
   private set isMenu(flag) {
     if (flag == this.isRightAppend) return;
     this.showMenu = flag;
-  }
-
-  private get isRightAppend() {
-    return this.$vuetify.breakpoint.lgAndUp;
   }
 
   private get rightClass() {
