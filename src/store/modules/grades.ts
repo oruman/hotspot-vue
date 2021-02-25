@@ -170,7 +170,7 @@ export class Grades extends VuexModule {
         )
           ? res["tol_delay_weeks"]
           : 0;
-        this.context.commit("setTolsDelay", rolDelayWeeks);
+        this.context.commit("setTolsDelay", tolDelayWeeks);
         if (Object.prototype.hasOwnProperty.call(res, "rol"))
           this.context.commit(
             "setRols",
