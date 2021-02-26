@@ -32,12 +32,17 @@
       <template v-if="monSpeakingFiles.length">
         <v-list-item-title
           class="text-uppercase text-center text-h6 font-weight-bold"
-        >Monthly speaking</v-list-item-title
+          >Monthly speaking</v-list-item-title
         >
         <v-list-item v-for="item of monSpeakingFiles" :key="item.id">
           <v-card width="100%" class="mb-3" color="#e0e0e0">
-            <v-card-text class="body-1 font-weight-bold text--primary py-1 px-2">{{ item.name }}</v-card-text>
-            <v-card-subtitle class="py-0 px-2 text--primary">Date: {{ formatDate(item.date) }}</v-card-subtitle>
+            <v-card-text
+              class="body-1 font-weight-bold text--primary py-1 px-2"
+              >{{ item.name }}</v-card-text
+            >
+            <v-card-subtitle class="py-0 px-2 text--primary"
+              >Date: {{ formatDate(item.date) }}</v-card-subtitle
+            >
             <v-card-actions>
               <v-btn text @click.prevent="download(item)" small>
                 <v-icon>mdi-download</v-icon>
