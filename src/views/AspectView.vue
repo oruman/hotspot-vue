@@ -260,7 +260,7 @@ export default class AspectView extends Vue {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .wrap-header {
   min-width: 85px;
 }

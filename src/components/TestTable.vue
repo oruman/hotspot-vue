@@ -21,7 +21,7 @@
                   <th
                     v-for="(total, index) in dataForView.Total"
                     :key="index"
-                    class="text-center"
+                    class="text-center ps-1"
                   >
                     {{ index + 1 }} MON
                   </th>
@@ -31,12 +31,11 @@
                 <tr v-for="(value, aspect) of dataForView" :key="aspect">
                   <th>{{ aspect }}</th>
                   <td
-                    class="text-center"
-                    v-for="(text, index) in value"
+                    class="text-center ps-1"
+                    v-for="(item, index) in value"
                     :key="`${aspect}-${index}`"
-                  >
-                    {{ formatValue(text) }}
-                  </td>
+                    v-html="formatTableCell(item)"
+                  ></td>
                 </tr>
               </tbody>
             </template>
@@ -59,6 +58,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import { aspectsName } from "@/data/data";
 import {DefaultChartOptions} from "@/data/charoptions";
+import moment from "moment";
 
 @Component
 export default class TestTable extends Vue {
@@ -84,7 +84,7 @@ export default class TestTable extends Vue {
       const aspect = this.getNameForAspect(item.aspect);
       if (!Object.prototype.hasOwnProperty.call(newData, aspect))
         newData[aspect] = [];
-      newData[aspect].push(item.score);
+      newData[aspect].push(item);
     }
     for (const aspect in newData) {
       if (!Object.prototype.hasOwnProperty.call(newData, aspect)) continue;
@@ -99,7 +99,7 @@ export default class TestTable extends Vue {
       const startLength = newData[aspect].length;
       for (let i = startLength; i < maxLength; i++) newData[aspect].push(0);
     }
-    const totalArray: number[] = [];
+    const totalArray: SimpleObject[] = [];
     for (let i = 0; i < maxLength; i++) {
       let cnt = 0;
       let total = 0;
@@ -107,11 +107,13 @@ export default class TestTable extends Vue {
         if (!Object.prototype.hasOwnProperty.call(newData, aspect)) continue;
         if (newData[aspect][i]) {
           cnt++;
-          total += newData[aspect][i];
+          total += newData[aspect][i].score;
         }
       }
       if (cnt > 0) total = total / cnt;
-      totalArray.push(total);
+      totalArray.push({
+        score: total
+      });
     }
     newData["Total"] = totalArray;
     return newData;
@@ -122,7 +124,7 @@ export default class TestTable extends Vue {
     newData.push(0);
     const oldData = this.dataForView;
     if (Object.prototype.hasOwnProperty.call(oldData, "Total")) {
-      for (const item of this.dataForView["Total"]) newData.push(item);
+      for (const item of this.dataForView["Total"]) newData.push(item.score);
     }
     if (newData.length > 1) newData[0] = newData[1];
     return [
@@ -152,8 +154,17 @@ export default class TestTable extends Vue {
       : "";
   }
 
-  protected formatValue(value: number) {
-    return value.toFixed(1);
+  protected formatTableCell(item: SimpleObject) {
+    const value = item.score.toFixed(1);
+    const date = moment(item.date).format("DD/MM");
+    return `<span>${date} :</span> ${value}`;
   }
 }
 </script>
+
+<style scoped lang="scss">
+::v-deep td span {
+  display: inline-block;
+  color: red;
+}
+</style>
