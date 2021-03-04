@@ -1,7 +1,7 @@
 <template>
   <v-simple-table
     fixed-header
-    :height="$vuetify.breakpoint.mdAndDown ? 300 : 'auto'"
+    :height="$vuetify.breakpoint.mdAndDown ? 500 : 'auto'"
   >
     <template v-slot:default v-if="$vuetify.breakpoint.mdAndDown">
       <thead>
@@ -20,11 +20,7 @@
             v-for="aspect in aspectsView"
             :key="`${aspect}-${index}`"
           >
-            <b
-              v-if="dataForView[aspect][index]"
-              :class="colorClassForMark(dataForView[aspect][index])"
-              >{{ dataForView[aspect][index] }}</b
-            >
+            <Mark :mark="dataForView[aspect][index]" />
           </td>
         </tr>
       </tbody>
@@ -46,11 +42,7 @@
             v-for="(text, index) in weeks"
             :key="`${aspect}-${index}`"
           >
-            <b
-              v-if="dataForView[aspect][index]"
-              :class="colorClassForMark(dataForView[aspect][index])"
-              >{{ dataForView[aspect][index] }}</b
-            >
+            <Mark :mark="dataForView[aspect][index]" />
           </td>
         </tr>
       </tbody>
@@ -61,16 +53,11 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { aspectsName } from "@/data/data";
-
-@Component
+import Mark from "@/components/Mark.vue";
+@Component({
+  components: { Mark }
+})
 export default class MarkTable extends Vue {
-  private colors: SimpleObject = {
-    "+": "mark-plus",
-    "+/-": "mark-middle",
-    "-": "mark-minus",
-    H: "mark-absence"
-  };
-
   mounted() {
     this.$store.dispatch("lessons/GET_DATA");
   }
@@ -119,12 +106,6 @@ export default class MarkTable extends Vue {
     return newData;
   }
 
-  private colorClassForMark(mark: string) {
-    return Object.prototype.hasOwnProperty.call(this.colors, mark)
-      ? this.colors[mark]
-      : "";
-  }
-
   protected getNameForAspect(id: string) {
     return Object.prototype.hasOwnProperty.call(aspectsName, id)
       ? aspectsName[id]
@@ -136,33 +117,5 @@ export default class MarkTable extends Vue {
 <style scoped lang="scss">
 ::v-deep div {
   max-height: 100%;
-}
-.mark-plus,
-.mark-minus,
-.mark-middle,
-.mark-absence {
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: solid 1px transparent;
-  box-sizing: border-box;
-  line-height: 28px;
-}
-.mark-plus {
-}
-.mark-minus {
-  background-color: #f90000;
-  border-color: #f90000;
-  color: white;
-}
-.mark-middle {
-  border-color: black;
-  color: #f90000;
-}
-.mark-absence {
-  background-color: #969696;
-  border-color: #9696;
-  color: black;
 }
 </style>

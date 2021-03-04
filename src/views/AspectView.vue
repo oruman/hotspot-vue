@@ -18,14 +18,20 @@
           Homework
         </h4>
         <template v-for="(week, weekIndex) of dataForView">
-          <v-card flat class="d-flex" :key="'week_header_' + weekIndex">
-            <strong class="subtitle-1 text-uppercase"
+          <v-card flat class="d-flex" :key="'week_header_' + weekIndex" ref="block-week">
+            <strong class="subtitle-1 text-uppercase wrap-header"
               >Week {{ weekIndex + 1 }}</strong
             >
             <v-spacer />
-            <span>{{ week.date }}</span>
+            <Mark :mark="week.mark" class="mb-1" />
+            <v-spacer />
+            <span class="wrap-header">{{ week.date }}</span>
           </v-card>
-          <v-card :key="'week_data_' + weekIndex" class="mb-3">
+          <v-card
+            :key="'week_data_' + weekIndex"
+            class="mb-3"
+            :class="week.mark ? 'marked' : ''"
+          >
             <template v-for="(weekItem, weekItemIndex) of week.items">
               <v-card-title
                 :key="'week_header_' + weekIndex + '_' + weekItemIndex"
@@ -85,32 +91,31 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Watch, Vue } from "vue-property-decorator";
 import { Aspects } from "@/data/data";
 import moment from "moment";
 import ReadOutLoud from "@/components/ReadOutLoud.vue";
 import ThinkOutLoud from "@/components//ThinkOutLoud.vue";
 import RightPanel from "@/components/RightPanel.vue";
+import Mark from "@/components/Mark.vue";
 @Component({
-  components: { ReadOutLoud, ThinkOutLoud, RightPanel }
+  components: { Mark, ReadOutLoud, ThinkOutLoud, RightPanel }
 })
 export default class AspectView extends Vue {
   @Prop({ default: Aspects.GRAMMAR }) readonly aspect!: number;
   private delayToLesson = -2;
   private showMenu = false;
+  private isScrolled = false;
 
   mounted() {
     this.$store.dispatch("grades/GET_DATA");
     this.$store.dispatch("lessons/GET_DATA");
+    this.setScroll();
   }
 
-  private get dates() {
-    const arrDates: string[] = [];
+  private get marks(): SimpleObject[] {
     const data = this.$store ? this.$store.getters["lessons/marks"] : [];
-    for (const item of data) {
-      if (item.aspect == this.aspect) arrDates.push(item.date);
-    }
-    return arrDates;
+    return data.filter((el: SimpleObject) => el.aspect == this.aspect);
   }
 
   private get rols() {
@@ -156,7 +161,7 @@ export default class AspectView extends Vue {
     let numWeek = 0;
     for (const items of data) {
       const newItem: SimpleObject[] = [];
-      const dateNum = this.dates[numWeek] || Date.now();
+      const dateNum = this.marks[numWeek]?.date || Date.now();
       const dateMomentum = moment(dateNum);
       for (const elOfItems of items) {
         if (elOfItems.aspect != this.aspect) continue;
@@ -175,6 +180,7 @@ export default class AspectView extends Vue {
         });
       }
       const week: SimpleObject = {
+        mark: this.marks[numWeek]?.mark || "",
         date: dateMomentum.format("YYYY-MM-DD"),
         deadLine: dateMomentum
           .add(this.delayToLesson, "day")
@@ -187,6 +193,42 @@ export default class AspectView extends Vue {
       numWeek++;
     }
     return newData;
+  }
+
+  @Watch("aspect")
+  private updatedAspect(oldValue: number, newValue: number) {
+    if (oldValue == 0 || oldValue === newValue) return;
+    setTimeout(() => {
+      this.isScrolled = false;
+      this.setScroll();
+    }, 500);
+  }
+
+  @Watch("marks")
+  private setScroll() {
+    if (!this.marks.length || this.isScrolled) return;
+    if (!Object.keys(this.$refs).length) {
+      setTimeout(this.setScroll.bind(this), 100);
+      return;
+    }
+    this.isScrolled = true;
+
+    let numActiveLesson = 0;
+    const now = Date.now();
+    for (let i = 0; i < this.marks.length; i++) {
+      numActiveLesson = i;
+      if (this.marks[i].date > now) break;
+    }
+
+    const els: Vue[] = this.$refs["block-week"] as Vue[];
+    if (!els[numActiveLesson]) return;
+    const el = els[numActiveLesson].$el as HTMLElement;
+    if (el.offsetTop < 200 && el.offsetTop < window.innerHeight / 2) return;
+
+    window.scrollTo({
+      top: el.offsetTop,
+      behavior: "smooth"
+    });
   }
 
   //<editor-fold defaultstate="collapsed" desc="Work with menu">
@@ -219,6 +261,13 @@ export default class AspectView extends Vue {
 </script>
 
 <style scoped>
+.wrap-header {
+  min-width: 85px;
+}
+.marked {
+  background-color: #e6e6e6;
+}
+
 .task-list {
   padding-left: 0;
 }

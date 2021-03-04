@@ -6,14 +6,14 @@
     <v-flex class="pa-3">
       <v-card class="mb-3">
         <v-card-text>
-          <h6 class="title text-uppercase">Attendance</h6>
-          <MarkTable />
+          <h6 class="title text-uppercase d-flex d-sm-none">Hall of fame</h6>
+          <HallOfFame />
         </v-card-text>
       </v-card>
       <v-card>
         <v-card-text>
-          <h6 class="title text-uppercase d-flex d-sm-none">Hall of fame</h6>
-          <HallOfFame />
+          <h6 class="title text-uppercase">Attendance</h6>
+          <MarkTable />
         </v-card-text>
       </v-card>
     </v-flex>

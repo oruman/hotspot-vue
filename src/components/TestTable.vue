@@ -124,6 +124,7 @@ export default class TestTable extends Vue {
     if (Object.prototype.hasOwnProperty.call(oldData, "Total")) {
       for (const item of this.dataForView["Total"]) newData.push(item);
     }
+    if (newData.length > 1) newData[0] = newData[1];
     return [
       {
         name: "Average",

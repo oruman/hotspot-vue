@@ -1,8 +1,10 @@
 const knownAudioTypes = [
   "audio/mpeg",
+  "audio/webm; codecs=opus",
   "audio/webm",
   "audio/ogg",
   "audio/ogg; codecs=opus",
+  "audio/mp3",
   "audio/wave",
   "audio/wav",
   "audio/x-wav",
