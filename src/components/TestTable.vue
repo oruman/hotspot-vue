@@ -3,7 +3,7 @@
     <h6 class="title text-uppercase">Performance</h6>
     <v-carousel
       dark
-      height="270"
+      height="250"
       hide-delimiters
       :show-arrows="false"
       v-model="carouselModel"
@@ -44,10 +44,10 @@
       </v-carousel-item>
     </v-carousel>
     <v-sheet class="d-flex justify-space-between">
-      <v-btn :disabled="isGraph" @click="carouselModel = 0">
+      <v-btn small :disabled="isGraph" @click="carouselModel = 0">
         <v-icon>mdi-chevron-left</v-icon> Show Graph
       </v-btn>
-      <v-btn :disabled="!isGraph" @click="carouselModel = 1">
+      <v-btn small :disabled="!isGraph" @click="carouselModel = 1">
         Show Table <v-icon>mdi-chevron-right</v-icon>
       </v-btn>
     </v-sheet>
