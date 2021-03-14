@@ -62,7 +62,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { Aspects } from "@/data/data";
+import {Aspects, DATE_FULL} from "@/data/data";
 import moment from "moment";
 import Utils from "@/helpers/util";
 
@@ -91,7 +91,7 @@ export default class RightPanel extends Vue {
   }
 
   private formatDate(date: string) {
-    return date ? moment(date).format("YYYY-MM-DD HH:mm") : "N/A";
+    return date ? moment(date).format(DATE_FULL) : "N/A";
   }
 
   private play(item: SimpleObject) {

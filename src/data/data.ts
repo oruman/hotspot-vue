@@ -9,3 +9,6 @@ export const aspectsName: SimpleObject = {
   2: "Listening",
   3: "Speaking"
 };
+
+export const DATE_SHORT = "D MMM";
+export const DATE_FULL = "D MMM HH:mm";

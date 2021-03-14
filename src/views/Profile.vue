@@ -164,7 +164,7 @@ export default class Profile extends Vue {
   }
 
   private clearPhone(str: string) {
-    return str.replaceAll(/\D/g, "");
+    return str.replace(/\D/g, "");
   }
 
   private get isEnabled() {

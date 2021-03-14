@@ -3,7 +3,7 @@
     <v-divider />
     <v-card-title class="text-break" v-text="text"></v-card-title>
     <v-card-subtitle class="pb-0">
-      Deadline: <b>{{ deadLine }}</b>
+      Deadline: <b class="text-uppercase">{{ deadLine }}</b>
     </v-card-subtitle>
     <v-card-actions>
       <v-btn text small v-if="isFileRecord" @click.prevent="download()">
@@ -52,6 +52,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import moment from "moment";
 import Utils from "@/helpers/util";
+import {DATE_FULL} from "@/data/data";
 
 @Component
 export default class ReadOutLoud extends Vue {
@@ -62,7 +63,7 @@ export default class ReadOutLoud extends Vue {
 
   mounted() {
     this.$store.dispatch("homework/GET_DATA");
-    this.nowString = moment().format("YYYY-MM-DD HH:mm");
+    this.nowString = moment().format(DATE_FULL);
   }
 
   private get file() {

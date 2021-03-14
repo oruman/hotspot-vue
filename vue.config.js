@@ -11,6 +11,7 @@ module.exports = function(env) {
   if (production) result["publicPath"] = "";
   else {
     result["devServer"] = {
+      https: true,
       proxy: {
         "^/a/": {
           target: "https://arriba-hotspot-staging.herokuapp.com/",

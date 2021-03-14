@@ -18,14 +18,19 @@
           Homework
         </h4>
         <template v-for="(week, weekIndex) of dataForView">
-          <v-card flat class="d-flex" :key="'week_header_' + weekIndex" ref="block-week">
+          <v-card
+            flat
+            class="d-flex"
+            :key="'week_header_' + weekIndex"
+            ref="block-week"
+          >
             <strong class="subtitle-1 text-uppercase wrap-header"
               >Week {{ weekIndex + 1 }}</strong
             >
             <v-spacer />
             <Mark :mark="week.mark" class="mb-1" />
             <v-spacer />
-            <span class="wrap-header">{{ week.date }}</span>
+            <span class="wrap-header text-right text-uppercase">{{ week.date }}</span>
           </v-card>
           <v-card
             :key="'week_data_' + weekIndex"
@@ -92,7 +97,7 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from "vue-property-decorator";
-import { Aspects } from "@/data/data";
+import {Aspects, DATE_FULL, DATE_SHORT} from "@/data/data";
 import moment from "moment";
 import ReadOutLoud from "@/components/ReadOutLoud.vue";
 import ThinkOutLoud from "@/components//ThinkOutLoud.vue";
@@ -181,10 +186,8 @@ export default class AspectView extends Vue {
       }
       const week: SimpleObject = {
         mark: this.marks[numWeek]?.mark || "",
-        date: dateMomentum.format("YYYY-MM-DD"),
-        deadLine: dateMomentum
-          .add(this.delayToLesson, "day")
-          .format("YYYY-MM-DD HH:mm"),
+        date: dateMomentum.format(DATE_SHORT),
+        deadLine: dateMomentum.add(this.delayToLesson, "day").format(DATE_FULL),
         items: newItem
       };
       if (this.rols[numWeek]) week.rol = this.rols[numWeek];

@@ -66,6 +66,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import Tabs from "@/components/Tabs.vue";
 import moment from "moment";
+import {DATE_SHORT} from "@/data/data";
 
 @Component({
   components: { Tabs }
@@ -112,7 +113,7 @@ export default class Curriculum extends Vue {
       !this.lessonsDate[this.activeTab][num]
     )
       return "";
-    return moment(this.lessonsDate[this.activeTab][num]).format("YYYY-MM-DD");
+    return moment(this.lessonsDate[this.activeTab][num]).format(DATE_SHORT);
   }
 
   private get lessonsDate() {

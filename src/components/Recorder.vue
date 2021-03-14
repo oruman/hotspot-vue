@@ -85,6 +85,7 @@ export default class Recorder extends Vue {
       this.isDialog = true;
       // eslint-disable-next-line no-empty
     } catch (e) {
+      console.log(e);
       this.$store.dispatch("errors/ADD", "Recorder is not exist");
       this.$store.dispatch("audio/SET_RECORD", {});
     }

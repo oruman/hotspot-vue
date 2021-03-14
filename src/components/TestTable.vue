@@ -17,11 +17,11 @@
             <template v-slot:default>
               <thead>
                 <tr>
-                  <th>Test</th>
+                  <th class="px-2">Test</th>
                   <th
                     v-for="(total, index) in dataForView.Total"
                     :key="index"
-                    class="text-center ps-1"
+                    class="text-center px-1"
                   >
                     {{ index + 1 }} MON
                   </th>
@@ -29,9 +29,9 @@
               </thead>
               <tbody>
                 <tr v-for="(value, aspect) of dataForView" :key="aspect">
-                  <th>{{ aspect }}</th>
+                  <th class="px-2">{{ aspect }}</th>
                   <td
-                    class="text-center ps-1"
+                    class="text-center px-1"
                     v-for="(item, index) in value"
                     :key="`${aspect}-${index}`"
                     v-html="formatTableCell(item)"
@@ -56,7 +56,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { aspectsName } from "@/data/data";
+import {aspectsName, DATE_SHORT} from "@/data/data";
 import {DefaultChartOptions} from "@/data/charoptions";
 import moment from "moment";
 
@@ -156,15 +156,21 @@ export default class TestTable extends Vue {
 
   protected formatTableCell(item: SimpleObject) {
     const value = item.score.toFixed(1);
-    const date = moment(item.date).format("DD/MM");
-    return `<span>${date} :</span> ${value}`;
+    let ret = "";
+    if (item.aspect) {
+      const date = moment(item.date).format(DATE_SHORT);
+      ret += `<span>${date}</span> `;
+    }
+    ret += `${value}%`;
+    return ret;
   }
 }
 </script>
 
 <style scoped lang="scss">
 ::v-deep td span {
-  display: inline-block;
+  display: block;
   color: red;
+  text-transform: uppercase;
 }
 </style>

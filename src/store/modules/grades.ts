@@ -67,7 +67,7 @@ export class Grades extends VuexModule {
             text: task.title
           };
           if (task.link) newTask.link = task.link;
-          else if (!task.title.replaceAll("_", "")) continue;
+          else if (!task.title.replace(/_/g, "")) continue; //ReplaceAll not working on iOS12
           items.push(newTask);
         }
         if (items.length) {

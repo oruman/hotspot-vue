@@ -16,6 +16,9 @@ const knownAudioTypes = [
 
 type CallBackDuration = (duration: number) => void;
 
+import AudioRecorder from "audio-recorder-polyfill";
+// import mpegEncoder from "audio-recorder-polyfill/mpeg-encoder";
+
 export default class MicRecorder {
   private stream!: MediaStream;
   private mediaRecorder!: MediaRecorder;
@@ -23,6 +26,7 @@ export default class MicRecorder {
   private defaultRecordingType = "";
   private isDisabled = false;
   private isStopped = false;
+  private alreadyUsePolyfill = false;
   private countStart = 0;
   public onError = (message: string) => {
     console.log(message);
@@ -39,9 +43,11 @@ export default class MicRecorder {
         navigator.webkitGetUserMedia ||
         navigator.mozGetUserMedia ||
         navigator.msGetUserMedia;
+      console.log("typeof", typeof getUserMedia);
       if (typeof getUserMedia != "function")
-        throw new Error("Recorder is not exists");
-      getUserMedia(
+        throw new Error("Recorder is not exists 2");
+      getUserMedia.call(
+        navigator,
         { audio: true },
         this.setMediaRecorder.bind(this),
         this.error.bind(this)
@@ -58,6 +64,12 @@ export default class MicRecorder {
 
   private setMediaRecorder(stream: MediaStream) {
     this.defaultRecordingType = MicRecorder.testAudioTypes();
+    if (!this.defaultRecordingType && !this.alreadyUsePolyfill) {
+      /* AudioRecorder.encoder = mpegEncoder;
+      AudioRecorder.prototype.mimeType = "audio/mpeg"; */
+      window.MediaRecorder = AudioRecorder;
+      this.defaultRecordingType = MicRecorder.testAudioTypes();
+    }
     if (!this.defaultRecordingType)
       throw new Error(
         "Media Recorder API: None of known types are supported for recording :("
@@ -120,7 +132,12 @@ export default class MicRecorder {
     });
     if (this.mediaRecorder.state != "recording") {
       if (!this.countStart) return Promise.reject();
-    } else this.mediaRecorder.stop();
+    } else {
+      this.mediaRecorder.stop();
+      this.mediaRecorder.stream.getTracks().forEach(track => {
+        track.stop();
+      });
+    }
     await promiseStop;
     if (!this.isStopped) return Promise.reject();
     const audioBlob = new Blob(this.audioChunks, {
@@ -176,6 +193,7 @@ export default class MicRecorder {
   }
 
   private error(e: MediaStreamError) {
+    console.log("AHA!", e);
     this.isDisabled = true;
     let message: string = e.message ? e.message : "Upps...";
     if (message === "Permission denied")

@@ -123,6 +123,7 @@ import { Component, Vue } from "vue-property-decorator";
 import { mapGetters } from "vuex";
 import moment from "moment";
 import Utils from "@/helpers/util";
+import {DATE_FULL} from "@/data/data";
 
 @Component({
   computed: mapGetters(["isLoading"])
@@ -234,7 +235,7 @@ export default class HolidayHomework extends Vue {
   private getDeadline(num: number) {
     num--;
     if (!this.deadlines[num]) return "N/A";
-    return moment(this.deadlines[num]).format("YYYY-MM-DD HH:mm");
+    return moment(this.deadlines[num]).format(DATE_FULL);
   }
 
   private get isDisabled() {
