@@ -1,6 +1,12 @@
 <template>
   <v-sheet outlined dark class="pa-3">
-    <h6 class="title text-uppercase">Performance</h6>
+    <v-sheet class="d-flex">
+      <h6 class="title text-uppercase grow">Performance</h6>
+      <v-btn-toggle v-model="carouselModel">
+        <v-btn small>Graph</v-btn>
+        <v-btn small>Table</v-btn>
+      </v-btn-toggle>
+    </v-sheet>
     <v-carousel
       dark
       height="250"
@@ -43,14 +49,6 @@
         </v-sheet>
       </v-carousel-item>
     </v-carousel>
-    <v-sheet class="d-flex justify-space-between">
-      <v-btn small :disabled="isGraph" @click="carouselModel = 0">
-        <v-icon>mdi-chevron-left</v-icon> Show Graph
-      </v-btn>
-      <v-btn small :disabled="!isGraph" @click="carouselModel = 1">
-        Show Table <v-icon>mdi-chevron-right</v-icon>
-      </v-btn>
-    </v-sheet>
   </v-sheet>
 </template>
 

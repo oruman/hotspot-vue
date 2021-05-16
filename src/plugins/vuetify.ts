@@ -1,6 +1,8 @@
 import Vue from "vue";
 import Vuetify from "vuetify/lib";
 
+import colors from "vuetify/lib/util/colors";
+
 Vue.use(Vuetify);
 
 export default new Vuetify({
@@ -14,7 +16,8 @@ export default new Vuetify({
         success: "#4CAF50",
         info: "#2196F3",
         warning: "#FB8C00",
-        error: "#FF5252"
+        error: "#FF5252",
+        background: colors.red.base
       },
       light: {
         primary: "#C0151E",

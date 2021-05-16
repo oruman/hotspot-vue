@@ -30,7 +30,9 @@
             <v-spacer />
             <Mark :mark="week.mark" class="mb-1" />
             <v-spacer />
-            <span class="wrap-header text-right text-uppercase">{{ week.date }}</span>
+            <span class="wrap-header text-right text-uppercase">{{
+              week.date
+            }}</span>
           </v-card>
           <v-card
             :key="'week_data_' + weekIndex"
@@ -44,7 +46,7 @@
                 {{ weekItem.theme }}
               </v-card-title>
               <v-card-text
-                v-if="weekItem.tasks.length"
+                v-if="weekItem.tasks.length || weekItem.videos.length"
                 :key="'week_tasks_' + weekIndex + '_' + weekItemIndex"
               >
                 <ul class="task-list">
@@ -57,6 +59,19 @@
                     "
                   >
                     <a :href="task.link" target="_blank">{{ task.text }}</a>
+                  </li>
+                </ul>
+                <ul class="youtube-list">
+                  <li
+                    v-for="(video, videoIndex) of weekItem.videos"
+                    :key="
+                      ['week_video', weekIndex, weekItemIndex, videoIndex].join(
+                        '_'
+                      )
+                    "
+                  >
+                    <a :href="video.link" target="_blank">{{ video.text }}</a>
+                    <Youtube :youtube-id="video.youtube" />
                   </li>
                 </ul>
               </v-card-text>
@@ -97,14 +112,16 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from "vue-property-decorator";
-import {Aspects, DATE_FULL, DATE_SHORT} from "@/data/data";
+import { Aspects, DATE_FULL, DATE_SHORT } from "@/data/data";
 import moment from "moment";
 import ReadOutLoud from "@/components/ReadOutLoud.vue";
 import ThinkOutLoud from "@/components//ThinkOutLoud.vue";
 import RightPanel from "@/components/RightPanel.vue";
 import Mark from "@/components/Mark.vue";
+import Utils from "@/helpers/util";
+import Youtube from "@/components/Youtube.vue";
 @Component({
-  components: { Mark, ReadOutLoud, ThinkOutLoud, RightPanel }
+  components: { Youtube, Mark, ReadOutLoud, ThinkOutLoud, RightPanel }
 })
 export default class AspectView extends Vue {
   @Prop({ default: Aspects.GRAMMAR }) readonly aspect!: number;
@@ -173,15 +190,23 @@ export default class AspectView extends Vue {
 
         const theme: string[] = [];
         const tasks: SimpleObject[] = [];
+        const videos: SimpleObject[] = [];
 
         for (const el of elOfItems.items) {
-          if (el.link) tasks.push(el);
-          else if (el.text) theme.push(el.text);
+          if (el.link) {
+            el.youtube = Utils.getYoutubeId(el.link);
+            if (el.youtube) {
+              videos.push(el);
+            } else {
+              tasks.push(el);
+            }
+          } else if (el.text) theme.push(el.text);
         }
         if (!theme.length) theme.push(elOfItems.title);
         newItem.push({
           theme: theme.join(" / "),
-          tasks
+          tasks,
+          videos
         });
       }
       const week: SimpleObject = {
@@ -286,6 +311,17 @@ export default class AspectView extends Vue {
   left: 0;
   top: 0;
   content: "\26AB";
+}
+
+.youtube-list {
+  padding-left: 0;
+}
+.youtube-list li {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  margin-right: 10px;
 }
 
 .right-panel-append {

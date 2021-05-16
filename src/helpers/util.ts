@@ -56,4 +56,10 @@ export default class Utils {
     const ext = /(?:\.([^.]+))?$/.exec(fileName);
     return ext && ext[1] ? ext[1] : "";
   }
+
+  static getYoutubeId(link: string) {
+    const youTubeRegexp = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/gi;
+    const result = youTubeRegexp.exec(link);
+    return result && result.length > 1 ? result[1] : "";
+  }
 }
