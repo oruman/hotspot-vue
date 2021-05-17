@@ -71,7 +71,7 @@
                     "
                   >
                     <a :href="video.link" target="_blank">{{ video.text }}</a>
-                    <Youtube :youtube-id="video.youtube" />
+                    <Youtube :video-id="video.youtube" />
                   </li>
                 </ul>
               </v-card-text>
