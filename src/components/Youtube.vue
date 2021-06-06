@@ -35,7 +35,7 @@ export default class Youtube extends Vue {
   private get styles() {
     const ret: SimpleObject = {};
     if (this.videoId) {
-      ret.backgroundImage = `url("https://img.youtube.com/vi/${this.videoId}/0.jpg")`;
+      ret.backgroundImage = `url("https://img.youtube.com/vi/${this.videoId}/sddefault.jpg")`;
     }
     ret.width = this.width + "px";
     ret.height = this.height + "px";
