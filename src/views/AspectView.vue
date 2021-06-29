@@ -71,7 +71,7 @@
                     "
                   >
                     <a :href="video.link" target="_blank">{{ video.text }}</a>
-                    <Youtube :video-id="video.youtube" />
+                    <YoutubePreview :video-id="video.youtube" />
                   </li>
                 </ul>
               </v-card-text>
@@ -119,9 +119,9 @@ import ThinkOutLoud from "@/components//ThinkOutLoud.vue";
 import RightPanel from "@/components/RightPanel.vue";
 import Mark from "@/components/Mark.vue";
 import Utils from "@/helpers/util";
-import Youtube from "@/components/Youtube.vue";
+import YoutubePreview from "@/components/YoutubePreview.vue";
 @Component({
-  components: { Youtube, Mark, ReadOutLoud, ThinkOutLoud, RightPanel }
+  components: { YoutubePreview, Mark, ReadOutLoud, ThinkOutLoud, RightPanel }
 })
 export default class AspectView extends Vue {
   @Prop({ default: Aspects.GRAMMAR }) readonly aspect!: number;

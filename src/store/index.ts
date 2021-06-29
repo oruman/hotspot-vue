@@ -8,6 +8,7 @@ import { Groups } from "@/store/modules/groups";
 import { Students } from "@/store/modules/students";
 import { MonthSpeaking } from "@/store/modules/monthspeaking";
 import { Audio } from "@/store/modules/audio";
+import { Youtube } from "@/store/modules/youtube";
 import { Homework } from "@/store/modules/homework";
 import { Holidays } from "@/store/modules/holidays";
 import { Errors } from "@/store/modules/errors";
@@ -27,6 +28,7 @@ export default new Vuex.Store({
       contex.dispatch("students/CLEAR_CACHE");
       contex.dispatch("monspeaking/CLEAR_CACHE");
       contex.dispatch("audio/CLEAR_CACHE");
+      contex.dispatch("youtube/CLEAR_CACHE");
       contex.dispatch("homework/CLEAR_CACHE");
       contex.dispatch("errors/CLEAR_CACHE");
     }
@@ -48,6 +50,7 @@ export default new Vuex.Store({
     students: Students,
     monspeaking: MonthSpeaking,
     audio: Audio,
+    youtube: Youtube,
     homework: Homework,
     holidays: Holidays,
     errors: Errors

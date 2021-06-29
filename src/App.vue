@@ -6,6 +6,7 @@
     </v-main>
     <AudioPlayer v-if="isLogged"></AudioPlayer>
     <Recorder v-if="isLogged"></Recorder>
+    <YoutubePopup v-if="isLogged"></YoutubePopup>
     <v-footer v-if="!isLogged">
       <v-col cols="12" class="text-center">
         <a href="https://github.com/oruman/" target="_blank">OruMan</a>
@@ -22,9 +23,11 @@ import TopToolbar from "./components/TopToolbar.vue";
 import AudioPlayer from "@/components/AudioPlayer.vue";
 import Recorder from "@/components/Recorder.vue";
 import Notifier from "@/components/Notifier.vue";
+import YoutubePopup from "@/components/YoutubePopup.vue";
 
 @Component({
   components: {
+    YoutubePopup,
     Notifier,
     Recorder,
     AudioPlayer,
