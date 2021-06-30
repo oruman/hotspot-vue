@@ -60,8 +60,6 @@
 <script lang="ts">
 // https://github.com/anteriovieira/vue-youtube/blob/master/src/vue-youtube.js
 import { Component, Prop, Vue } from "vue-property-decorator";
-import player from "youtube-player";
-import { YouTubePlayer } from "youtube-player/dist/types";
 
 @Component
 export default class YoutubePreview extends Vue {
