@@ -289,6 +289,8 @@ export default class AspectView extends Vue {
 </script>
 
 <style scoped lang="scss">
+@import "~vuetify/src/styles/settings/_variables";
+
 .wrap-header {
   min-width: 85px;
 }
@@ -315,13 +317,29 @@ export default class AspectView extends Vue {
 
 .youtube-list {
   padding-left: 0;
+  display: grid;
+  gap: 20px;
 }
+@media screen and (min-width: 960px) and (max-width: 1263px) {
+  .youtube-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media screen and (min-width: 1464px) and (max-width: 1903px) {
+  .youtube-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media screen and (min-width: 1904px) {
+  .youtube-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 .youtube-list li {
-  display: inline-block;
+  display: block;
   position: relative;
   width: 100%;
-  max-width: 400px;
-  margin-right: 10px;
 }
 
 .right-panel-append {

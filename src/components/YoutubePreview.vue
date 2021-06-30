@@ -67,46 +67,16 @@ import { YouTubePlayer } from "youtube-player/dist/types";
 export default class YoutubePreview extends Vue {
   @Prop({ type: String, default: "" }) readonly videoId!: string;
 
-  private aspectRatio = 16 / 9;
-  private tm: number | null = null;
-  private width = 400;
-  private height = 300;
-
-  mounted() {
-    this.getSize();
-    window.addEventListener("resize", this.onResize);
-  }
-
-  beforeDestroy() {
-    window.removeEventListener("resize", this.onResize);
-  }
-
   private get styles() {
     const ret: SimpleObject = {};
     if (this.videoId) {
       ret.backgroundImage = `url("https://img.youtube.com/vi/${this.videoId}/sddefault.jpg")`;
     }
-    ret.width = this.width + "px";
-    ret.height = this.height + "px";
     return ret;
   }
 
   private setPlayer() {
     this.$store.dispatch("youtube/SET_ID", this.videoId);
-  }
-
-  private onResize() {
-    if (this.tm) {
-      clearTimeout(this.tm);
-      this.tm = null;
-    }
-    this.getSize();
-  }
-
-  private getSize() {
-    const el = this.$el as HTMLElement;
-    this.width = el.offsetWidth;
-    this.height = this.width / this.aspectRatio;
   }
 }
 </script>
@@ -115,7 +85,7 @@ export default class YoutubePreview extends Vue {
 .video-placeholder {
   position: relative;
   width: 100%;
-  height: 300px;
+  aspect-ratio: 18 / 10;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
