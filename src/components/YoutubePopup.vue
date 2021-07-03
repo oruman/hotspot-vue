@@ -6,7 +6,7 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-actions>
-      <v-card-text ref="container" class="ps-0 align-content-center">
+      <v-card-text ref="container" class="ps-0 pb-0 align-content-center youtubeplayer-wrapper">
         <div ref="wrapper"></div>
       </v-card-text>
     </v-card>
@@ -113,6 +113,8 @@ export default class YoutubePopup extends Vue {
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+.youtubeplayer-wrapper {
+  line-height: 0;
+}
 </style>

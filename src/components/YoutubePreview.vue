@@ -6,6 +6,9 @@
       :style="styles"
       @click.prevent="setPlayer"
     >
+      <img
+        style="width: 100%;"
+        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAKCAMAAACOlf6TAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRF////AAAAVcLTfgAAAAF0Uk5TAEDm2GYAAAAOSURBVHjaYmAYygAgwAAAvgABLh4yMwAAAABJRU5ErkJggg==" />
       <svg
         width="66"
         height="73"
@@ -83,10 +86,10 @@ export default class YoutubePreview extends Vue {
 .video-placeholder {
   position: relative;
   width: 100%;
-  aspect-ratio: 18 / 10;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
+  line-height: 0;
 }
 .video-start {
   position: absolute;
