@@ -112,7 +112,7 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from "vue-property-decorator";
-import { Aspects, DATE_FULL, DATE_SHORT } from "@/data/data";
+import { Aspects, DATE_SHORT } from "@/data/data";
 import moment from "moment";
 import ReadOutLoud from "@/components/ReadOutLoud.vue";
 import ThinkOutLoud from "@/components//ThinkOutLoud.vue";
@@ -212,7 +212,7 @@ export default class AspectView extends Vue {
       const week: SimpleObject = {
         mark: this.marks[numWeek]?.mark || "",
         date: dateMomentum.format(DATE_SHORT),
-        deadLine: dateMomentum.add(this.delayToLesson, "day").format(DATE_FULL),
+        deadLine: dateMomentum.add(this.delayToLesson, "day").valueOf(),
         items: newItem
       };
       if (this.rols[numWeek]) week.rol = this.rols[numWeek];
