@@ -113,7 +113,7 @@ export default class ThinkOutLoud extends Vue {
       const data: SimpleObject = {};
       data.file = result;
       data.dateIndex = this.globalNum;
-      this.$store.dispatch("network/UPLOAD_ROL", data);
+      this.$store.dispatch("network/UPLOAD_TOL", data);
     });
   }
 
