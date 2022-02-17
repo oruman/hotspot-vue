@@ -92,12 +92,10 @@ export class Grades extends VuexModule {
   setTols(data: SimpleObject[]) {
     if (!data) return;
     const newData: SimpleObject[] = [];
-    let weekNum = 1;
-    for (const item of data) {
-      if (weekNum < this._tolsDelayWeek) {
-        weekNum++;
-        continue;
-      }
+    const srcData = data
+      .filter((item: SimpleObject) => item.id > this._tolsDelayWeek)
+      .sort((a, b) => a.id - b.id);
+    for (const item of srcData) {
       let i = 1;
       const newItems: string[] = [];
       while (Object.prototype.hasOwnProperty.call(item, i)) {
@@ -111,10 +109,9 @@ export class Grades extends VuexModule {
         i++;
       }
       newData.push({
-        id: weekNum,
+        id: item.id - 1,
         items: newItems
       });
-      weekNum++;
     }
     this._tols = newData;
   }
