@@ -22,5 +22,9 @@ module.exports = function(env) {
     };
   }
 
+  result["devServer"] = {
+    proxy: "https://arriba-hotspot-staging.herokuapp.com"
+  };
+
   return result;
 };

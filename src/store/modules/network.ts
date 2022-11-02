@@ -1,5 +1,6 @@
 import { Action, Module, Mutation, VuexModule } from "vuex-module-decorators";
 import axios, { AxiosResponse } from "axios";
+import Utils from "@/helpers/util";
 
 @Module({ namespaced: true })
 export class Network extends VuexModule {
@@ -414,6 +415,32 @@ export class Network extends VuexModule {
           });
           return Promise.resolve(true);
         } else return Promise.reject();
+      });
+  }
+
+  @Action
+  UPLOAD_HOLIDAY_HOMEWORK(payloads: SimpleObject) {
+    const form = new FormData();
+    for (const key in payloads) {
+      if (!Object.prototype.hasOwnProperty.call(payloads, key)) {
+        continue;
+      }
+      if (key === "file") {
+        form.append("file", Utils.b64toBlob(payloads.file.base64), payloads.file.name)
+      } else {
+        form.append(key, payloads[key]);
+      }
+    }
+    this.context.commit("increaseLoadingCount");
+    return axios
+      .post(this._url + "students/hhw", form, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      })
+      .finally(() => {
+        this.context.commit("decreaseLoadingCount");
       });
   }
 

@@ -85,7 +85,7 @@ export default class TopToolbar extends Vue {
         this.routeTo("/listening");
       }
     },
-    /* {
+    {
       divider: true
     },
     {
@@ -94,7 +94,7 @@ export default class TopToolbar extends Vue {
       click: () => {
         this.routeTo("/hhw");
       }
-    }, */
+    },
     {
       divider: true
     },

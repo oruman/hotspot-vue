@@ -1,6 +1,6 @@
 <template>
   <v-container fluid grid-list-xl>
-    <v-expansion-panels class="mb-4">
+    <v-expansion-panels v-if="rules.length" class="mb-4">
       <v-expansion-panel>
         <v-expansion-panel-header>Rules</v-expansion-panel-header>
         <v-expansion-panel-content>
@@ -37,6 +37,16 @@
         >
           <v-icon>mdi-download</v-icon>
           Download
+        </v-btn>
+        <v-btn
+          text
+          small
+          v-else
+          :disabled="isLoading"
+          @click.prevent="upload(grammarAnswer)"
+        >
+          <v-icon>mdi-upload</v-icon>
+          Upload
         </v-btn>
         <v-spacer />
         <v-btn
@@ -123,7 +133,7 @@ import { Component, Vue } from "vue-property-decorator";
 import { mapGetters } from "vuex";
 import moment from "moment";
 import Utils from "@/helpers/util";
-import {DATE_FULL} from "@/data/data";
+import { DATE_FULL } from "@/data/data";
 
 @Component({
   computed: mapGetters(["isLoading"])
@@ -154,7 +164,7 @@ export default class HolidayHomework extends Vue {
         return "Task " + i + " - Deadline: " + this.getDeadline(i) + "\n";
       });
     }
-    return Utils.nl2br(rules);
+    return Utils.nl2br(rules.trim());
   }
 
   private get tasks(): SimpleObject[] {
@@ -268,15 +278,14 @@ export default class HolidayHomework extends Vue {
   }
 
   private upload(aspect: number) {
-    /*const accept = aspect == this.speakingAspect ? "audio/*" : "image/*";
+    const accept = aspect == this.speakingAspect ? "audio/*" : "image/*";
     Utils.chooseFile(accept).then(result => {
       const data: SimpleObject = {};
       data.file = result;
-      data.aspect = aspect;
+      data.aspect = aspect + 1;
       data.index = this.step;
-      this.$store.dispatch("network/UPLOAD_TOL", data);
-    });*/
-    return;
+      this.$store.dispatch("network/UPLOAD_HOLIDAY_HOMEWORK", data);
+    });
   }
 
   private remove(aspect: number) {
