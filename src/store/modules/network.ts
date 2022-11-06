@@ -1,5 +1,6 @@
 import { Action, Module, Mutation, VuexModule } from "vuex-module-decorators";
 import axios, { AxiosResponse } from "axios";
+import get from "lodash.get";
 import Utils from "@/helpers/util";
 
 @Module({ namespaced: true })
@@ -380,6 +381,22 @@ export class Network extends VuexModule {
 
   @Action
   UPLOAD_HW_AUDIO(payloads: SimpleObject) {
+    let fileName = get(payloads, ["file", "name"]);
+    if (!fileName) {
+      const contentType =
+        get(payloads, ["file", "content-type"]) || "audio/webm";
+      const mt = /\/([a-z]*)/m.exec(contentType);
+      const extension = mt && mt[1] ? "." + mt[1] : "";
+      fileName = Date.now() + extension.toLowerCase();
+      payloads.file.name = fileName;
+    }
+    if (payloads.kind === 4) {
+      return this.context.dispatch("UPLOAD_HOLIDAY_HOMEWORK", {
+        index: payloads.dateIndex,
+        file: payloads.file,
+        aspect: 3
+      });
+    }
     payloads.studentId = this.context.rootGetters["state/studentId"];
     this.context.commit("increaseLoadingCount");
     return axios
@@ -443,6 +460,14 @@ export class Network extends VuexModule {
           "Content-Type": "multipart/form-data"
         }
       })
+      .then((res: AxiosResponse) => {
+        const answers = get(res, ["data", "student", "hhw", "answers"]);
+        if (!answers) {
+          return Promise.reject();
+        }
+        this.context.dispatch("holidays/SET_ANSWERS", answers, { root: true });
+        return Promise.resolve(res.data);
+      })
       .finally(() => {
         this.context.commit("decreaseLoadingCount");
       });
@@ -466,19 +491,12 @@ export class Network extends VuexModule {
         return Promise.reject(err);
       })
       .then((res: AxiosResponse) => {
-        if (
-          Object.prototype.hasOwnProperty.call(res, "data") &&
-          Object.prototype.hasOwnProperty.call(res.data, "student") &&
-          Object.prototype.hasOwnProperty.call(res.data.student, "hhw") &&
-          Object.prototype.hasOwnProperty.call(res.data.student.hhw, "answers")
-        ) {
-          this.context.dispatch(
-            "holidays/SET_ANSWERS",
-            res.data.student.hhw.answers,
-            { root: true }
-          );
-          return Promise.resolve(true);
-        } else return Promise.reject();
+        const answers = get(res, ["data", "student", "hhw", "answers"]);
+        if (!answers) {
+          return Promise.reject();
+        }
+        this.context.dispatch("holidays/SET_ANSWERS", answers, { root: true });
+        return Promise.resolve(true);
       });
   }
 

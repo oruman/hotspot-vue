@@ -28,6 +28,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { mapGetters } from "vuex";
+import get from "lodash.get";
 import MicRecorder from "@/helpers/micrecorder";
 import Utils from "@/helpers/util";
 
@@ -129,14 +130,10 @@ export default class Recorder extends Vue {
           dateIndex: this.data.dateIndex
         };
         this.$store.dispatch("network/UPLOAD_HW_AUDIO", obj).then(res => {
-          if (
-            !Object.prototype.hasOwnProperty.call(res, "rejected") ||
-            res.rejected ||
-            !Object.prototype.hasOwnProperty.call(res, "file_id") ||
-            !res.file_id
-          )
-            return;
-          this.play(name, res.file_id);
+          if (get(res, "rejected")) return;
+          const fileId = get(res, "file_id") || get(res, ["file", "id"]);
+          if (!fileId) return;
+          this.play(name, fileId);
         });
       })
       // eslint-disable-next-line @typescript-eslint/no-empty-function

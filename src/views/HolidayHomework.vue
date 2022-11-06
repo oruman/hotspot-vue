@@ -28,36 +28,37 @@
         </template>
       </v-card-text>
       <v-card-actions>
+        <template v-if="grammarAnswer">
+          <v-btn
+            text
+            small
+            :disabled="isLoading"
+            @click.prevent="download(grammarAnswer)"
+          >
+            <v-icon>mdi-download</v-icon>
+            Download
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            text
+            small
+            v-if="!isDisabled"
+            :disabled="isLoading"
+            @click.prevent="remove(grammarAspect)"
+          >
+            <v-icon>mdi-close-thick</v-icon>
+            Delete
+          </v-btn>
+        </template>
         <v-btn
           text
           small
-          v-if="grammarAnswer"
+          v-else-if="!isDisabled"
           :disabled="isLoading"
-          @click.prevent="download(grammarAnswer)"
-        >
-          <v-icon>mdi-download</v-icon>
-          Download
-        </v-btn>
-        <v-btn
-          text
-          small
-          v-else
-          :disabled="isLoading"
-          @click.prevent="upload(grammarAnswer)"
+          @click.prevent="upload(grammarAspect)"
         >
           <v-icon>mdi-upload</v-icon>
           Upload
-        </v-btn>
-        <v-spacer />
-        <v-btn
-          text
-          small
-          v-if="grammarAnswer && !isDisabled"
-          :disabled="isLoading"
-          @click.prevent="remove(grammarAspect)"
-        >
-          <v-icon>mdi-close-thick</v-icon>
-          Delete
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -82,14 +83,37 @@
         </template>
       </v-card-text>
       <v-card-actions>
+        <template v-if="listeningAnswer">
+          <v-btn
+            text
+            small
+            :disabled="isLoading"
+            @click.prevent="download(listeningAnswer)"
+          >
+            <v-icon>mdi-download</v-icon>
+            Download
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            text
+            small
+            v-if="!isDisabled"
+            :disabled="isLoading"
+            @click.prevent="remove(listeningAspect)"
+          >
+            <v-icon>mdi-close-thick</v-icon>
+            Delete
+          </v-btn>
+        </template>
         <v-btn
           text
           small
-          v-if="listeningAnswer"
-          @click.prevent="download(listeningAnswer)"
+          v-else-if="!isDisabled"
+          :disabled="isLoading"
+          @click.prevent="upload(listeningAspect)"
         >
-          <v-icon>mdi-download</v-icon>
-          Download
+          <v-icon>mdi-upload</v-icon>
+          Upload
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -105,24 +129,52 @@
         <a :href="speaking.taskLink" target="_blank">{{ speakingTaskName }}</a>
       </v-card-text>
       <v-card-actions>
-        <v-btn
-          text
-          small
-          v-if="speakingAnswer"
-          @click.prevent="download(speakingAnswer)"
-        >
-          <v-icon>mdi-download</v-icon>
-          Download
-        </v-btn>
-        <v-btn
-          text
-          small
-          v-if="speakingAnswer"
-          @click.prevent="play(speakingAnswer)"
-        >
-          <v-icon>mdi-play</v-icon>
-          Play
-        </v-btn>
+        <template v-if="speakingAnswer">
+          <v-btn
+            text
+            small
+            :disabled="isLoading"
+            @click.prevent="download(speakingAnswer)"
+          >
+            <v-icon>mdi-download</v-icon>
+            Download
+          </v-btn>
+          <v-btn
+            text
+            small
+            :disabled="isLoading"
+            @click.prevent="play(speakingAnswer)"
+          >
+            <v-icon>mdi-play</v-icon>
+            Play
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            text
+            small
+            v-if="!isDisabled"
+            :disabled="isLoading"
+            @click.prevent="remove(speakingAspect)"
+          >
+            <v-icon>mdi-close-thick</v-icon>
+            Delete
+          </v-btn>
+        </template>
+        <template v-else-if="!isDisabled">
+          <v-btn
+            text
+            small
+            :disabled="isLoading"
+            @click.prevent="upload(speakingAspect)"
+          >
+            <v-icon>mdi-upload</v-icon>
+            Upload
+          </v-btn>
+          <v-btn text small :disabled="isLoading" @click.prevent="record()">
+            <v-icon>mdi-record-rec</v-icon>
+            Record
+          </v-btn>
+        </template>
       </v-card-actions>
     </v-card>
   </v-container>
@@ -142,7 +194,7 @@ export default class HolidayHomework extends Vue {
   private step = 1;
   private readonly grammarAspect = 1;
   private readonly listeningAspect = 2;
-  private readonly speakingAspect = 2;
+  private readonly speakingAspect = 3;
 
   mounted() {
     this.$store.dispatch("holidays/GET_DATA");
@@ -277,12 +329,21 @@ export default class HolidayHomework extends Vue {
     });
   }
 
+  private record() {
+    const obj = {
+      name: "Holiday Homework Speaking - Task #" + this.step,
+      dateIndex: this.step,
+      kind: 4
+    };
+    this.$store.dispatch("audio/SET_RECORD", obj);
+  }
+
   private upload(aspect: number) {
     const accept = aspect == this.speakingAspect ? "audio/*" : "image/*";
     Utils.chooseFile(accept).then(result => {
       const data: SimpleObject = {};
       data.file = result;
-      data.aspect = aspect + 1;
+      data.aspect = aspect;
       data.index = this.step;
       this.$store.dispatch("network/UPLOAD_HOLIDAY_HOMEWORK", data);
     });
