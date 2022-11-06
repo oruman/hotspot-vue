@@ -3,7 +3,11 @@
     <template v-slot:default>
       <thead>
         <tr>
-          <th><h6 class="title text-uppercase black--text d-none d-sm-block">Hall of fame</h6></th>
+          <th>
+            <h6 class="title text-uppercase black--text d-none d-sm-block">
+              Hall of fame
+            </h6>
+          </th>
           <th class="text-center" v-for="num in countMonth" :key="num">
             {{ num }} MON
           </th>

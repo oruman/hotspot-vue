@@ -6,7 +6,10 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-actions>
-      <v-card-text ref="container" class="ps-0 pb-0 align-content-center youtubeplayer-wrapper">
+      <v-card-text
+        ref="container"
+        class="ps-0 pb-0 align-content-center youtubeplayer-wrapper"
+      >
         <div ref="wrapper"></div>
       </v-card-text>
     </v-card>

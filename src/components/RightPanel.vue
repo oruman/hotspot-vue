@@ -62,7 +62,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import {Aspects, DATE_FULL} from "@/data/data";
+import { Aspects, DATE_FULL } from "@/data/data";
 import moment from "moment";
 import Utils from "@/helpers/util";
 

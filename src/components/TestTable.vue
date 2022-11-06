@@ -54,8 +54,8 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import {aspectsName, DATE_SHORT} from "@/data/data";
-import {DefaultChartOptions} from "@/data/charoptions";
+import { aspectsName, DATE_SHORT } from "@/data/data";
+import { DefaultChartOptions } from "@/data/charoptions";
 import moment from "moment";
 
 @Component

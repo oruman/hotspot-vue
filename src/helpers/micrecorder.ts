@@ -37,7 +37,10 @@ export default class MicRecorder {
   }
 
   private getStream() {
-    if (typeof navigator.mediaDevices == "undefined" || typeof navigator.mediaDevices.getUserMedia == "undefined") {
+    if (
+      typeof navigator.mediaDevices == "undefined" ||
+      typeof navigator.mediaDevices.getUserMedia == "undefined"
+    ) {
       const getUserMedia: NavigatorGetUserMedia =
         navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||

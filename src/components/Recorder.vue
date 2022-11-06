@@ -30,7 +30,6 @@ import { Component, Vue } from "vue-property-decorator";
 import { mapGetters } from "vuex";
 import MicRecorder from "@/helpers/micrecorder";
 import Utils from "@/helpers/util";
-import {Errors} from "@/store/modules/errors";
 
 @Component({
   computed: mapGetters(["isLoading"])

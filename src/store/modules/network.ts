@@ -426,7 +426,11 @@ export class Network extends VuexModule {
         continue;
       }
       if (key === "file") {
-        form.append("file", Utils.b64toBlob(payloads.file.base64), payloads.file.name)
+        form.append(
+          "file",
+          Utils.b64toBlob(payloads.file.base64),
+          payloads.file.name
+        );
       } else {
         form.append(key, payloads[key]);
       }

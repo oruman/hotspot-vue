@@ -20,7 +20,7 @@ export default class Utils {
     link.remove();
   }
 
-  static b64toBlob(b64Data: string, contentType= "", sliceSize= 512) {
+  static b64toBlob(b64Data: string, contentType = "", sliceSize = 512) {
     const byteCharacters = atob(b64Data);
     const byteArrays = [];
 
@@ -36,7 +36,7 @@ export default class Utils {
       byteArrays.push(byteArray);
     }
 
-    const blob = new Blob(byteArrays, {type: contentType});
+    const blob = new Blob(byteArrays, { type: contentType });
     return blob;
   }
 
